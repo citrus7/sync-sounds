@@ -1,6 +1,6 @@
 {
   "name": "sync-sounds",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Support multiple music performers",
   "dependencies": {
     "express": "4.10.2",

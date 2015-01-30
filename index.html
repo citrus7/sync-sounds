@@ -1,164 +1,152 @@
 <!doctype html>
+
 <html>
-  <head>
-    <title>Socket.IO chat</title>
-    <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; }
-      body { font: 13px Helvetica, Arial; }
-      form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
-      form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
-      form button { width: 9%; background: #fff; border: none; padding: 10px; }
-      #messages { list-style-type: none; margin: 0; padding: 0; }
-      #messages li { padding: 5px 10px; }
-      #messages li:nth-child(odd) { background: #eee; }
-    </style>
-  </head>
-  <body>
-    <ul id="messages"></ul>
-    <form action="">
-      <input id="m" autocomplete="off" /><button>emit</button>
-    </form>
-    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
-    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
-  <script src="js/jquery.hotkeys.js"></script>
-  <script src="js/keyObjects.js"></script>
-  <script src="js/main.js"></script>
-    <script>
+<head>
+  <title>Sound Grid</title>
 
-      var socket = io();
-      $('form').submit(function(){
-        socket.emit('sound_key', $('#m').val());
-        $('#m').val('');
-        return false;
-      });
-      socket.on('sound_key', function(msg){
-        if (isNaN(msg)) return;
-        var sound_key = parseInt(msg);
-        play_multi_sound('tone-'+sound_key);
-      });
+  <link href="css/shared.css" rel="stylesheet" type="text/css"/>
+  <link href="css/examples.css" rel="stylesheet" type="text/css"/>
+  <link href="css/soundjs.css" rel="stylesheet" type="text/css"/>
+  <script src="js/examples.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      font-size: 11px;
+    }
 
-      $('#sounds').hide()
-    </script>
+    #content {
+      width: 1000px;
+    }
+
+    .gridBox {
+      float: left;
+      background-repeat: no-repeat;
+      background-position: 0 0px;
+      background-color: #222;
+      background-size: 320px 300px;
+      border: 0px solid #666;
+      width: 320px;
+      height: 100px;
+    }
+
+    .gridBox:hover {
+      background-position: 0 -100px;
+      background-color: #322;
+      cursor: pointer;
+    }
+
+    .gridBox.active, .gridbox.active:hover {
+      background-position: 0 -200px;
+      cursor: auto;
+    }
+  </style>
+
+</head>
+
+<body onload="init();">
 
 
+<div id="content">
+  <div id="1" onclick="playSound(this)" class="gridBox"></div>
+  <div id="2" onclick="playSound(this)" class="gridBox"></div>
+  <div id="3" onclick="playSound(this)" class="gridBox"></div>
+  <div id="4" onclick="playSound(this)" class="gridBox"></div>
+  <div id="5" onclick="playSound(this)" class="gridBox"></div>
+  <div id="6" onclick="playSound(this)" class="gridBox"></div>
+  <div id="7" onclick="playSound(this)" class="gridBox"></div>
+  <div id="8" onclick="playSound(this)" class="gridBox"></div>
+  <div id="9" onclick="playSound(this)" class="gridBox"></div>
+  <div id="10" onclick="playSound(this)" class="gridBox"></div>
+  <div id="11" onclick="playSound(this)" class="gridBox"></div>
+  <div id="12" onclick="playSound(this)" class="gridBox"></div>
+</div>
 
-<div id="sounds">
-    <audio id="tone-1" preload="auto" controls>
-      <source src="http://h5p.hit.bg/grand-piano/1A.ogg" type="audio/ogg"></source>
-      <source src="http://h5p.hit.bg/grand-piano/1A.mp3" type="audio/mpeg"></source>
-    </audio>
-    <audio id="tone-2" preload="auto" controls>
-      <source src="http://h5p.hit.bg/grand-piano/1As.ogg" type="audio/ogg"></source>
-      <source src="http://h5p.hit.bg/grand-piano/1As.mp3" type="audio/mpeg"></source>
-    </audio>
-    <audio id="tone-3" preload="auto" controls>
-      <source src="http://h5p.hit.bg/grand-piano/1B.ogg" type="audio/ogg"></source>
-      <source src="http://h5p.hit.bg/grand-piano/1B.mp3" type="audio/mpeg"></source>
-    </audio>
-    <audio id="tone-4" preload="auto" controls>
-      <source src="http://h5p.hit.bg/grand-piano/2C.ogg" type="audio/ogg"></source>
-      <source src="http://h5p.hit.bg/grand-piano/2C.mp3" type="audio/mpeg"></source>
-    </audio>
-    <audio id="tone-5" preload="auto" controls>
-      <source src="http://h5p.hit.bg/grand-piano/2Cs.ogg" type="audio/ogg"></source>
-      <source src="http://h5p.hit.bg/grand-piano/2Cs.mp3" type="audio/mpeg"></source>
-    </audio>
-    <audio id="tone-6" preload="auto" controls>
-      <source src="http://h5p.hit.bg/grand-piano/2D.ogg" type="audio/ogg"></source>
-      <source src="http://h5p.hit.bg/grand-piano/2D.mp3" type="audio/mpeg"></source>
-    </audio>
-    <audio id="tone-7" preload="auto" controls>
-      <source src="http://h5p.hit.bg/grand-piano/2Ds.ogg" type="audio/ogg"></source>
-      <source src="http://h5p.hit.bg/grand-piano/2Ds.mp3" type="audio/mpeg"></source>
-    </audio>
-    <audio id="tone-8" preload="auto" controls>
-      <source src="http://h5p.hit.bg/grand-piano/2E.ogg" type="audio/ogg"></source>
-      <source src="http://h5p.hit.bg/grand-piano/2E.mp3" type="audio/mpeg"></source>
-    </audio>
-    <audio id="tone-9" preload="auto" controls>
-      <source src="http://h5p.hit.bg/grand-piano/2F.ogg" type="audio/ogg"></source>
-      <source src="http://h5p.hit.bg/grand-piano/2F.mp3" type="audio/mpeg"></source>
-    </audio>
-    <audio id="tone-10" preload="auto" controls>
-      <source src="http://h5p.hit.bg/grand-piano/2Fs.ogg" type="audio/ogg"></source>
-      <source src="http://h5p.hit.bg/grand-piano/2Fs.mp3" type="audio/mpeg"></source>
-    </audio>
-    <audio id="tone-11" preload="auto" controls>
-      <source src="http://h5p.hit.bg/grand-piano/2G.ogg" type="audio/ogg"></source>
-      <source src="http://h5p.hit.bg/grand-piano/2G.mp3" type="audio/mpeg"></source>
-    </audio>
-    <audio id="tone-12" preload="auto" controls>
-      <source src="http://h5p.hit.bg/grand-piano/2Gs.ogg" type="audio/ogg"></source>
-      <source src="http://h5p.hit.bg/grand-piano/2Gs.mp3" type="audio/mpeg"></source>
-    </audio>
-    <audio id="tone-13" preload="auto" controls>
-      <source src="http://h5p.hit.bg/grand-piano/2A.ogg" type="audio/ogg"></source>
-      <source src="http://h5p.hit.bg/grand-piano/2A.mp3" type="audio/mpeg"></source>
-    </audio>
-    <audio id="tone-14" preload="auto" controls>
-      <source src="http://h5p.hit.bg/grand-piano/2As.ogg" type="audio/ogg"></source>
-      <source src="http://h5p.hit.bg/grand-piano/2As.mp3" type="audio/mpeg"></source>
-    </audio>
-    <audio id="tone-15" preload="auto" controls>
-      <source src="http://h5p.hit.bg/grand-piano/2B.ogg" type="audio/ogg"></source>
-      <source src="http://h5p.hit.bg/grand-piano/2B.mp3" type="audio/mpeg"></source>
-    </audio>
-    <audio id="tone-16" preload="auto" controls>
-      <source src="http://h5p.hit.bg/grand-piano/3C.ogg" type="audio/ogg"></source>
-      <source src="http://h5p.hit.bg/grand-piano/3C.mp3" type="audio/mpeg"></source>
-    </audio>
-    <audio id="tone-17" preload="auto" controls>
-      <source src="http://h5p.hit.bg/grand-piano/3C.ogg" type="audio/ogg"></source>
-      <source src="http://h5p.hit.bg/grand-piano/3C.mp3" type="audio/mpeg"></source>
-    </audio>
-    <audio id="tone-18" preload="auto" controls>
-      <source src="http://h5p.hit.bg/grand-piano/3Cs.ogg" type="audio/ogg"></source>
-      <source src="http://h5p.hit.bg/grand-piano/3Cs.mp3" type="audio/mpeg"></source>
-    </audio>
-    <audio id="tone-19" preload="auto" controls>
-      <source src="http://h5p.hit.bg/grand-piano/3D.ogg" type="audio/ogg"></source>
-      <source src="http://h5p.hit.bg/grand-piano/3D.mp3" type="audio/mpeg"></source>
-    </audio>
-    <audio id="tone-20" preload="auto" controls>
-      <source src="http://h5p.hit.bg/grand-piano/3Ds.ogg" type="audio/ogg"></source>
-      <source src="http://h5p.hit.bg/grand-piano/3Ds.mp3" type="audio/mpeg"></source>
-    </audio>
-    <audio id="tone-21" preload="auto" controls>
-      <source src="http://h5p.hit.bg/grand-piano/3E.ogg" type="audio/ogg"></source>
-      <source src="http://h5p.hit.bg/grand-piano/3E.mp3" type="audio/mpeg"></source>
-    </audio>
-    <audio id="tone-22" preload="auto" controls>
-      <source src="http://h5p.hit.bg/grand-piano/3F.ogg" type="audio/ogg"></source>
-      <source src="http://h5p.hit.bg/grand-piano/3F.mp3" type="audio/mpeg"></source>
-    </audio>
-    <audio id="tone-23" preload="auto" controls>
-      <source src="http://h5p.hit.bg/grand-piano/3Fs.ogg" type="audio/ogg"></source>
-      <source src="http://h5p.hit.bg/grand-piano/3Fs.mp3" type="audio/mpeg"></source>
-    </audio>
-    <audio id="tone-24" preload="auto" controls>
-      <source src="http://h5p.hit.bg/grand-piano/3G.ogg" type="audio/ogg"></source>
-      <source src="http://h5p.hit.bg/grand-piano/3G.mp3" type="audio/mpeg"></source>
-    </audio>
-    <audio id="tone-25" preload="auto" controls>
-      <source src="http://h5p.hit.bg/grand-piano/3Gs.ogg" type="audio/ogg"></source>
-      <source src="http://h5p.hit.bg/grand-piano/3Gs.mp3" type="audio/mpeg"></source>
-    </audio>
-    <audio id="tone-26" preload="auto" controls>
-      <source src="http://h5p.hit.bg/grand-piano/3A.ogg" type="audio/ogg"></source>
-      <source src="http://h5p.hit.bg/grand-piano/3A.mp3" type="audio/mpeg"></source>
-    </audio>
-    <audio id="tone-27" preload="auto" controls>
-      <source src="http://h5p.hit.bg/grand-piano/3As.ogg" type="audio/ogg"></source>
-      <source src="http://h5p.hit.bg/grand-piano/3As.mp3" type="audio/mpeg"></source>
-    </audio>
-    <audio id="tone-28" preload="auto" controls>
-      <source src="http://h5p.hit.bg/grand-piano/3B.ogg" type="audio/ogg"></source>
-      <source src="http://h5p.hit.bg/grand-piano/3B.mp3" type="audio/mpeg"></source>
-    </audio>
-    <audio id="tone-29" preload="auto" controls>
-      <source src="http://h5p.hit.bg/grand-piano/4C.ogg" type="audio/ogg"></source>
-      <source src="http://h5p.hit.bg/grand-piano/4C.mp3" type="audio/mpeg"></source>
-    </audio>
-  </div>
-  </body>
+<div id="error">
+  <h2>Sorry!</h2>
+  <p>This app is not currently supported in your browser.</p>
+</div>
+
+<script type="text/javascript" src="js/soundjs-NEXT.combined.js"></script>
+<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+<script>
+  var socket = io();
+  //var local_device_id = socket.io.engine.id;
+</script>
+
+
+<script id="editable">
+  var preload;
+
+  function init() {
+    if (!createjs.Sound.initializeDefaultPlugins()) {
+      document.getElementById("error").style.display = "block";
+      document.getElementById("content").style.display = "none";
+      return;
+    }
+
+    //examples.showDistractor("content");
+    var assetsPath = "audio/";
+    var sounds = [
+      {src: "Game-Break.ogg", id: 1},
+      {src: "Game-Spawn.ogg", id: 2},
+      {src: "Game-Shot.ogg", id: 3},
+
+      {src: "GU-StealDaisy.ogg", id: 4},
+      {src: "Humm.ogg", id: 5},
+      {src: "R-Damage.ogg", id: 6},
+
+      {src: "Thunder1.ogg", id: 7},
+      {src: "S-Damage.ogg", id: 8},
+      {src: "U-CabinBoy3.ogg", id: 9},
+
+      {src: "ToneWobble.ogg", id: 10},
+      {src: "Game-Death.ogg", id: 11},
+      {src: "Game-Break.ogg", id: 12}
+    ];
+
+    // add other extensions to try loading if the src file extension is not supported
+    createjs.Sound.alternateExtensions = ["mp3"]; 
+    // add an event listener for when load is completed
+    createjs.Sound.addEventListener("fileload", createjs.proxy(soundLoaded, this)); 
+    createjs.Sound.registerSounds(sounds, assetsPath);
+  }
+
+  function soundLoaded(event) {
+    //examples.hideDistractor();
+    var div = document.getElementById(event.id);
+    div.style.backgroundImage = "url('image/audioButtonSheet.png')";
+  }
+
+  function stop() {
+    if (preload != null) {
+      preload.close();
+    }
+    createjs.Sound.stop();
+  }
+
+  function playSound(target) {
+    //Play the sound: play (src, interrupt, delay, offset, loop, volume, pan)
+    socket.emit('sound_key', socket.io.engine.id+ "/" + target.id);
+
+    var instance = createjs.Sound.play(target.id, createjs.Sound.INTERRUPT_NONE, 0, 0, false, 1);
+    if (instance == null || instance.playState == createjs.Sound.PLAY_FAILED) {
+      return;
+    }
+  }
+
+  socket.on('sound_key', function(msg){
+    var args = msg.split('/');
+    var device_id = args[0];
+    if (device_id == socket.io.engine.id) return;
+
+    var sound_id = args[1];
+    var instance = createjs.Sound.play(sound_id, createjs.Sound.INTERRUPT_NONE, 0, 0, false, 1);
+    if (instance == null || instance.playState == createjs.Sound.PLAY_FAILED) {
+      return;
+    }
+  });
+
+</script>
+
+</body>
 </html>
