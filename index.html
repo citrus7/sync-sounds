@@ -21,68 +21,125 @@
   
 
   <style>
-/*
-    body {
-      font-family: sans-serif;
-      font-size: 11px;
-    }
-
-    #content {
-      width: 1000px;
-    }
-
-    .gridBox {
-      float: left;
-      background-repeat: no-repeat;
-      background-position: 0 0px;
-      background-color: #222;
-      background-size: 320px 300px;
-      border: 0px solid #666;
-      width: 320px;
-      height: 100px;
-    }
-
-    .gridBox:hover {
-      background-position: 0 -100px;
-      background-color: #322;
-      cursor: pointer;
-    }
-
-    .gridBox.active, .gridbox.active:hover {
-      background-position: 0 -200px;
-      cursor: auto;
-    }
-*/
     html, body {
             overflow: hidden;
             margin: 0;
         }
-
         .animate {
             -webkit-transition: all .3s;
             -moz-transition: all .3s;
             transition: all .3s;
         }
-
         #hit {
             padding: 10px;
         }
-
-        #log {
-            position: absolute;
-            padding: 10px;
-        }
+        
   </style>
 
 </head>
 
-<body onload="init();">
+<body>
 
 
 <div id="log"></div>
-<div id="hit" style="background: #42d692; width: 150px; height: 150px;"></div>
+<div id="hit1" style="background: #42d692; width: 300px; height: 300px;"></div>
+<!-- <div id="hit2" style="background: #42d692; width: 150px; height: 150px;"></div> -->
+
 
 <script>
+  var socket = io();
+  //var local_device_id = socket.io.engine.id;
+  var note1 = T("sin", 523.35);
+  var note2 = T("sin", 623.35);
+  var note3 = T("sin", 723.35);
+  var note4 = T("sin", 823.35);
+  var init_x = 0, init_y = 0;
+  var music_on = false;
+
+  var playTimebreSound = function(x, y) {
+    //if (music_on) return;
+
+    if (x < init_x) {
+      note1.play();
+    note2.pause();
+    note3.pause();
+    note4.pause();
+    }
+    else if (y < init_y) {
+      note2.play();
+      note1.pause();
+    note3.pause();
+    note4.pause();
+    }
+    else if (y > init_y) {
+      note3.play();
+      note1.pause();
+    note2.pause();
+    note4.pause();
+    }
+    else {
+      note4.play();
+      note1.pause();
+    note2.pause();
+    note3.pause();
+    }
+    music_on = true;
+  };
+
+  var stopTimebreSound = function() {
+    note1.pause();
+    note2.pause();
+    note3.pause();
+    note4.pause();
+    music_on = false;
+  };
+
+</script>
+
+<script id="editable">
+
+/*
+  function stop() {
+    if (preload != null) {
+      preload.close();
+    }
+    createjs.Sound.stop();
+  }
+
+  function playSound(target) {
+    //Play the sound: play (src, interrupt, delay, offset, loop, volume, pan)
+    socket.emit('sound_key', socket.io.engine.id+ "/" + target.id);
+    //  T("+", T("sin", 523.35),
+    //   T("sin", 659.25),
+    //   T("sin", 783.99)).set({mul: 0.25}).play();
+    //new Drone(randArray([146.83, 196, 220.00]));
+
+    var instance = createjs.Sound.play(target.id, createjs.Sound.INTERRUPT_NONE, 0, 0, false, 1);
+    if (instance == null || instance.playState == createjs.Sound.PLAY_FAILED) {
+      return;
+    }
+  }
+
+  socket.on('sound_key', function(msg){
+    var args = msg.split('/');
+    var device_id = args[0];
+    if (device_id == socket.io.engine.id) return;
+
+    var sound_id = args[1];
+    var instance = createjs.Sound.play(sound_id, createjs.Sound.INTERRUPT_NONE, 0, 0, false, 1);
+    if (instance == null || instance.playState == createjs.Sound.PLAY_FAILED) {
+      return;
+    }
+  });
+*/
+</script>
+
+
+
+
+<script>
+
+
 
     var reqAnimationFrame = (function () {
         return window[Hammer.prefixed(window, 'requestAnimationFrame')] || function (callback) {
@@ -91,10 +148,12 @@
     })();
 
     var log = document.querySelector("#log");
-    var el = document.querySelector("#hit");
+    var el = document.querySelector("#hit1");
 
     var START_X = Math.round((window.innerWidth - el.offsetWidth) / 2);
     var START_Y = Math.round((window.innerHeight - el.offsetHeight) / 2);
+    init_x = START_X;
+    init_y - START_Y;
 
     var ticking = false;
     var transform;
@@ -151,11 +210,17 @@
         ];
 
         value = value.join(" ");
-        el.textContent = value;
+        el.textContent = "(" + transform.translate.x + " , " + transform.translate.y + ")";
         el.style.webkitTransform = value;
         el.style.mozTransform = value;
         el.style.transform = value;
         ticking = false;
+        if (transform.translate.x == START_X && transform.translate.y == START_Y) {
+          stopTimebreSound();
+        }
+        else {
+          playTimebreSound(transform.translate.x, transform.translate.y);
+        }
     }
 
     function requestElementUpdate() {
@@ -167,6 +232,7 @@
 
     function logEvent(str) {
         //log.insertBefore(document.createTextNode(str +"\n"), log.firstChild);
+        console.log(str);
     }
 
     function onPan(ev) {
@@ -221,6 +287,9 @@
     }
 
     function onTap(ev) {
+      //var note0 = T("sin", 523.35); note0.play();
+      var note0 = T("sin", 50.0); note0.play();
+      //note0.pause();
         transform.rx = 1;
         transform.angle = 25;
 
@@ -245,115 +314,15 @@
     }
 
     resetElement();
+    $( document ).ready(function() {
+    //var note0 = T("sin", 523.35); note0.play();
+    //note0.pause();
+});
 
 </script>
-
-
-<!--
-<div id="content">
-  <div id="1" onclick="playSound(this)" class="gridBox"></div>
-  <div id="2" onclick="playSound(this)" class="gridBox"></div>
-  <div id="3" onclick="playSound(this)" class="gridBox"></div>
-  <div id="4" onclick="playSound(this)" class="gridBox"></div>
-  <div id="5" onclick="playSound(this)" class="gridBox"></div>
-  <div id="6" onclick="playSound(this)" class="gridBox"></div>
-  <div id="7" onclick="playSound(this)" class="gridBox"></div>
-  <div id="8" onclick="playSound(this)" class="gridBox"></div>
-  <div id="9" onclick="playSound(this)" class="gridBox"></div>
-  <div id="10" onclick="playSound(this)" class="gridBox"></div>
-  <div id="11" onclick="playSound(this)" class="gridBox"></div>
-  <div id="12" onclick="playSound(this)" class="gridBox"></div>
-</div>
-
-<div id="error">
-  <h2>Sorry!</h2>
-  <p>This app is not currently supported in your browser.</p>
-</div>
--->
-
 
 <script>
-  var socket = io();
-  //var local_device_id = socket.io.engine.id;
-</script>
-
-<script id="editable">
-  var preload;
-
-  function init() {
-    if (!createjs.Sound.initializeDefaultPlugins()) {
-      document.getElementById("error").style.display = "block";
-      document.getElementById("content").style.display = "none";
-      return;
-    }
-
-    //examples.showDistractor("content");
-    var assetsPath = "audio/";
-    var sounds = [
-      {src: "Game-Break.ogg", id: 1},
-      {src: "Game-Spawn.ogg", id: 2},
-      {src: "Game-Shot.ogg", id: 3},
-
-      {src: "GU-StealDaisy.ogg", id: 4},
-      {src: "Humm.ogg", id: 5},
-      {src: "R-Damage.ogg", id: 6},
-
-      {src: "Thunder1.ogg", id: 7},
-      {src: "S-Damage.ogg", id: 8},
-      {src: "U-CabinBoy3.ogg", id: 9},
-
-      {src: "ToneWobble.ogg", id: 10},
-      {src: "Game-Death.ogg", id: 11},
-      {src: "Game-Break.ogg", id: 12}
-    ];
-
-    // add other extensions to try loading if the src file extension is not supported
-    createjs.Sound.alternateExtensions = ["mp3"]; 
-    // add an event listener for when load is completed
-    createjs.Sound.addEventListener("fileload", createjs.proxy(soundLoaded, this)); 
-    createjs.Sound.registerSounds(sounds, assetsPath);
-  }
-
-  function soundLoaded(event) {
-    //examples.hideDistractor();
-    var div = document.getElementById(event.id);
-    div.style.backgroundImage = "url('image/audioButtonSheet.png')";
-  }
-
-  function stop() {
-    if (preload != null) {
-      preload.close();
-    }
-    createjs.Sound.stop();
-  }
-
-  function playSound(target) {
-    //Play the sound: play (src, interrupt, delay, offset, loop, volume, pan)
-    socket.emit('sound_key', socket.io.engine.id+ "/" + target.id);
-    //  T("+", T("sin", 523.35),
-    //   T("sin", 659.25),
-    //   T("sin", 783.99)).set({mul: 0.25}).play();
-    //new Drone(randArray([146.83, 196, 220.00]));
-
-    var instance = createjs.Sound.play(target.id, createjs.Sound.INTERRUPT_NONE, 0, 0, false, 1);
-    if (instance == null || instance.playState == createjs.Sound.PLAY_FAILED) {
-      return;
-    }
-  }
-
-  socket.on('sound_key', function(msg){
-    var args = msg.split('/');
-    var device_id = args[0];
-    if (device_id == socket.io.engine.id) return;
-
-    var sound_id = args[1];
-    var instance = createjs.Sound.play(sound_id, createjs.Sound.INTERRUPT_NONE, 0, 0, false, 1);
-    if (instance == null || instance.playState == createjs.Sound.PLAY_FAILED) {
-      return;
-    }
-  });
 
 </script>
-
 </body>
 </html>
