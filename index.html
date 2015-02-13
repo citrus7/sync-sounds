@@ -1,109 +1,29 @@
 <!DOCTYPE html>
 <html>
 <head>
-<!-- Load the Paper.js library -->
-<script type="text/javascript" src="js/paper-full.min.js"></script>
-<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
-<!-- Define inlined PaperScript associate it with myCanvas -->
-<script type="text/paperscript" canvas="myCanvas">
+  <title>sync-sounds</title>
+  <script type="text/javascript" src="js/paper-full.min.js"></script>
+  <script src="//cdn.socket.io/socket.io-1.2.0.js"></script>
 
+  <link rel="stylesheet" href="//paperjs.org/assets/css/style.css"/>
+  <script src="//paperjs.org/assets/js/paper.js"></script>
 
-	
-	//key 1
-	var cKey = new Path.Rectangle(100,100,25,75);
-	cKey.fillColor = 'white';
-	cKey.fullySelected = true;
-	cKey.onClick = function(event){
-		playNote(52);
-	}
+  <script src="js/timbre.js"></script>
+<script>
+function getWidth() {
+  if (self.innerHeight) {
+    return self.innerWidth;
+  }
 
-	//key 3
-	var cKey = new Path.Rectangle(125,100,25,75);
-	cKey.fillColor = 'white';
-	cKey.fullySelected = true;
-	cKey.onClick = function(event){
-		playNote(54);
-	}
+  if (document.documentElement && document.documentElement.clientHeight) {
+    return document.documentElement.clientWidth;
+  }
 
-	//key 5
-	var cKey = new Path.Rectangle(150,100,25,75);
-	cKey.fillColor = 'white';
-	cKey.fullySelected = true;
-	cKey.onClick = function(event){
-		playNote(56);
-	}
-	//key 6
-	var cKey = new Path.Rectangle(175,100,25,75);
-	cKey.fillColor = 'white';
-	cKey.fullySelected = true;
-	cKey.onClick = function(event){
-		playNote(57);
-	}
-
-	//key 8
-	var cKey = new Path.Rectangle(200,100,25,75);
-	cKey.fillColor = 'white';
-	cKey.fullySelected = true;
-	cKey.onClick = function(event){
-		playNote(59);
-	}
-
-	//key 10
-	var cKey = new Path.Rectangle(225,100,25,75);
-	cKey.fillColor = 'white';
-	cKey.fullySelected = true;
-	cKey.onClick = function(event){
-		playNote(61);
-	}
-
-	//key 12
-	var cKey = new Path.Rectangle(250,100,25,75);
-	cKey.fillColor = 'white';
-	cKey.fullySelected = true;
-	cKey.onClick = function(event){
-		playNote(63);
-	}
-	
-	//black keys
-	//key 2
-	var cKey = new Path.Rectangle(112,100,20,35);
-	cKey.fillColor = 'black';
-	cKey.fullySelected = true;
-	cKey.onClick = function(event){
-		playNote(53);
-	}
-	//key 4
-	var cKey = new Path.Rectangle(137,100,20,35);
-	cKey.fillColor = 'black';
-	cKey.fullySelected = true;
-	cKey.onClick = function(event){
-		playNote(55);
-	}	
-	//key 7
-	var cKey = new Path.Rectangle(187,100,20,35);
-	cKey.fillColor = 'black';
-	cKey.fullySelected = true;
-	cKey.onClick = function(event){
-		playNote(58);
-	}
-	//key 9
-	var cKey = new Path.Rectangle(212,100,20,35);
-	cKey.fillColor = 'black';
-	cKey.fullySelected = true;
-	cKey.onClick = function(event){
-		playNote(60);
-	}
-	//key 11
-	var cKey = new Path.Rectangle(237,100,20,35);
-	cKey.fillColor = 'black';
-	cKey.fullySelected = true;
-	cKey.onClick = function(event){
-		playNote(62);
-	}
-
-	
+  if (document.body) {
+    return document.body.clientWidth;
+  }
+}
 </script>
-<script src="js/timbre.js"></script>
 <script>
   var socket = io();
 
@@ -137,11 +57,152 @@
     var key = args[1];
     playSound(key);
   });
-
-
 </script>
+
+
+ <script type="text/paperscript" canvas="canvas">
+        var browser_width = getWidth();
+        var key_freq_arr = [ 52, 54, 56, 57, 59, 61, 63, 53, 55, 58, 60, 62 ];
+        var key_note_x_arr = [];
+        var key_note_x_size = browser_width / key_freq_arr.length;
+        
+        key_note_x_arr.push(key_note_x_size);
+        for (var i = 1; i < key_freq_arr.length; i++) {
+          key_note_x_arr.push(key_note_x_arr[i - 1] + key_note_x_size);
+        }
+
+
+        var currentPlayingKey = -1;
+
+/*
+        console.log(browser_width);
+        console.log(key_note_x_size);
+        console.log(key_freq_arr);
+        console.log(key_note_x_arr);
+*/
+
+        var values = {
+            friction: 0.8,
+            timeStep: 0.01,
+            amount: 15,
+            mass: 2,
+            count: 0
+        };
+        values.invMass = 1 / values.mass;
+
+        var path, springs;
+        var size = view.size * [1.2, 1];
+
+        var Spring = function(a, b, strength, restLength) {
+            this.a = a;
+            this.b = b;
+            this.restLength = restLength || 80;
+            this.strength = strength ? strength : 0.55;
+            this.mamb = values.invMass * values.invMass;
+        };
+
+        Spring.prototype.update = function() {
+            var delta = this.b - this.a;
+            var dist = delta.length;
+            var normDistStrength = (dist - this.restLength) /
+                    (dist * this.mamb) * this.strength;
+            delta.y *= normDistStrength * values.invMass * 0.2;
+            if (!this.a.fixed)
+                this.a.y += delta.y;
+            if (!this.b.fixed)
+                this.b.y -= delta.y;
+        };
+
+
+        function checkCurrentTapPosition(x, y) {
+
+          for (var i = 0; i < key_note_x_arr.length; i++) {
+            if (x < key_note_x_arr[i]) {
+              if (currentPlayingKey == i) return;
+              currentPlayingKey = i;
+              //console.log(x + ' play key: ' + i + ' - ' + key_note_x_arr[i]);
+              playNote(key_freq_arr[i]);
+              return;
+            }
+          }
+        }
+
+        function createPath(strength) {
+            var path = new Path({
+                fillColor: '#00FF80'
+            });
+            springs = [];
+            for (var i = 0; i <= values.amount; i++) {
+                var segment = path.add(new Point(i / values.amount, 0.5) * size);
+                var point = segment.point;
+                if (i == 0 || i == values.amount)
+                    point.y += size.height;
+                point.px = point.x;
+                point.py = point.y;
+                // The first two and last two points are fixed:
+                point.fixed = i < 2 || i > values.amount - 2;
+                if (i > 0) {
+                    var spring = new Spring(segment.previous.point, point, strength);
+                    springs.push(spring);
+                }
+            }
+            path.position.x -= size.width / 4;
+            return path;
+        }
+
+        function onResize() {
+            if (path)
+                path.remove();
+            size = view.bounds.size * [2, 1];
+            path = createPath(0.1);
+        }
+
+        function onMouseMove(event) {
+            var location = path.getNearestLocation(event.point);
+            var segment = location.segment;
+            var point = segment.point;
+            //console.log(point.x + " - " + point.y);
+            checkCurrentTapPosition(point.x, point.y);
+
+            if (!point.fixed && location.distance < size.height / 4) {
+                var y = event.point.y;
+                point.y += (y - point.y) / 6;
+                if (segment.previous && !segment.previous.fixed) {
+                    var previous = segment.previous.point;
+                    previous.y += (y - previous.y) / 24;
+                }
+                if (segment.next && !segment.next.fixed) {
+                    var next = segment.next.point;
+                    next.y += (y - next.y) / 24;
+                }
+            }
+        }
+
+        function onFrame(event) {
+            updateWave(path);
+        }
+
+        function updateWave(path) {
+            var force = 1 - values.friction * values.timeStep * values.timeStep;
+            for (var i = 0, l = path.segments.length; i < l; i++) {
+                var point = path.segments[i].point;
+                var dy = (point.y - point.py) * force;
+                point.py = point.y;
+                point.y = Math.max(point.y + dy, 0);
+            }
+
+            for (var j = 0, l = springs.length; j < l; j++) {
+                springs[j].update();
+            }
+            path.smooth();
+        }
+
+    </script>
+
+<script></script>
+
 </head>
 <body>
-	<canvas id="myCanvas" resize></canvas>
+  <canvas id="canvas" resize hidpi="off"></canvas>
 </body>
 </html>
