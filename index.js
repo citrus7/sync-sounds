@@ -12,7 +12,7 @@ app.get('/', function(req, res){
 io.on('connection', function(socket){
   socket.on('sound_key', function(msg){
     io.emit('sound_key', msg);
-    console.log('>> Receive sound ' + msg);
+    //console.log('>> Receive sound ' + msg);
   });
 });
 
