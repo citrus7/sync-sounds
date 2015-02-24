@@ -4,6 +4,7 @@
   "description": "Support multiple music performers",
   "dependencies": {
     "express": "4.10.2",
+    "jade": "^1.9.2",
     "socket.io": "1.3.2"
   }
 }
