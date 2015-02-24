@@ -27,13 +27,13 @@ function getWidth() {
 <script>
   var socket = io();
 
-	//key number to frequency
-	function keyToFreq(n){
-		return Math.pow(2 , (n - 49) / 12) * 440;
-	}
-	
-	var freq = 800;
-	
+  //key number to frequency
+  function keyToFreq(n){
+    return Math.pow(2 , (n - 49) / 12) * 440;
+  }
+  
+  var freq = 800;
+  
     //play the sound
   function playSound(key) {
     var freq = keyToFreq(key);

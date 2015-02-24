@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1.0, maximum-scale=2.0">
+
+  <title>DataTables example - DOM positioning</title>
+  <link rel="stylesheet" type="text/css" href="css/jquery.dataTables.css">
+  <link rel="stylesheet" type="text/css" href="css/demo.css">
+  <style type="text/css" class="init"></style>
+  <script type="text/javascript" language="javascript" src="js/jquery.js"></script>
+  <script type="text/javascript" language="javascript" src="js/jquery.dataTables.js"></script>
+
+  <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/themes/smoothness/jquery-ui.css" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/jquery-ui.min.js"></script>
+
+  <script type="text/javascript" language="javascript" class="init">
+    var selected_client_id = -1;
+    var selected_channel_id = -1;
+
+    function adminPickChannel() {
+      selected_channel_id = $('#channel-select-options').val();
+      if (selected_client_id < 0 || selected_channel_id < 0) return;
+      
+      $.ajax("/assign_user_to_channel?client=" + selected_client_id + "&channel=" + selected_channel_id)
+      .done(function() { 
+        console.log(selected_client_id + ' - ' + selected_channel_id);
+      })
+      .fail(function() {
+        console.log(selected_client_id + ' - ' + selected_channel_id);
+      })
+
+      $("#channel-selector-box").dialog("close");
+      location.reload();
+    }
+
+    $(document).ready(function() {
+      $("#channel-selector-box").dialog({ autoOpen: false });
+
+      $('#example').dataTable({ "ajax": '/clients' });
+
+      $('#example tbody').on('click', 'tr', function (){
+        selected_client_id  = $('td', this).eq(0).text();
+        selected_channel_id = $('td', this).eq(2).text();
+
+        $("#channel-select-options option[value=" + selected_channel_id + "]").prop("selected", "selected");
+        $("#channel-selector-box").dialog("open");
+      });
+    });
+
+  </script>
+</head>
+
+<body class="dt-example">
+  <div id="channel-selector-box" title="Select Channel">
+    <p>
+      <select id="channel-select-options">
+        <option value="1">Channel 1</option>
+        <option value="2">Channel 2</option>
+        <option value="3">Channel 3</option>
+        <option value="4">Channel 4</option>
+      </select>
+      <button id="channel-select-submit" onclick="adminPickChannel()">Submit</button>
+    </p>
+  </div>
+
+  <div class="container">
+    <section>
+      <h1>Sync-sounds <span> admin dashboard</span></h1>
+
+      <table id="example" class="display" cellspacing="0" width="100%">
+        <thead>
+          <tr>
+            <th>Client ID</th>
+            <th>Name</th>
+            <th class="channel-selector">Channel</th>
+            <th>Join Time</th>
+            <th>IP</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+
+</body>
+</html>
