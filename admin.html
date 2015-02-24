@@ -21,7 +21,7 @@
     function adminPickChannel() {
       selected_channel_id = $('#channel-select-options').val();
       if (selected_client_id < 0 || selected_channel_id < 0) return;
-      
+
       $.ajax("/assign_user_to_channel?client=" + selected_client_id + "&channel=" + selected_channel_id)
       .done(function() { 
         console.log(selected_client_id + ' - ' + selected_channel_id);
@@ -43,6 +43,7 @@
         selected_client_id  = $('td', this).eq(0).text();
         selected_channel_id = $('td', this).eq(2).text();
 
+        $("#channel-selector-box-client-name").text($('td', this).eq(1).text());
         $("#channel-select-options option[value=" + selected_channel_id + "]").prop("selected", "selected");
         $("#channel-selector-box").dialog("open");
       });
@@ -53,6 +54,7 @@
 
 <body class="dt-example">
   <div id="channel-selector-box" title="Select Channel">
+    <h5 id="channel-selector-box-client-name"></h5>
     <p>
       <select id="channel-select-options">
         <option value="1">Channel 1</option>
