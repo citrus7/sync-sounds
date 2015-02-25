@@ -70,6 +70,7 @@ io.on('connection', function(socket){
   socket.on('sound_key', function(msg) {
     var args = msg.split('/');
     var device_id = args[0];
+    var key_id = args[1];
 
     if (clients_table[device_id] == null) {
       clients_table[device_id] = {
@@ -81,8 +82,8 @@ io.on('connection', function(socket){
       console.log('New connection: ' + device_id);
     }
 
-    io.emit('sound_key', msg);
-    //console.log('>> Receive sound ' + msg);
+    io.emit('sound_key', device_id + '/' + channels_table[1][key_id]);
+    console.log('>> Receive sound ' + key_id + ' -> ' + channels_table[1][key_id]);
   });
 });
 

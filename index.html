@@ -37,27 +37,27 @@ function getWidth() {
   var freq = 800;
   
     //play the sound
-  function playSound(key) {
-    var freq = keyToFreq(key);
+  function playSound(sound_key) {
+    var freq = keyToFreq(sound_key);
     var osc = T("sin", { freq: freq, mul: 0.5 });
     T("timeout", { timeout: 500 }).on("ended", function() {
       this.stop();
-    }).set({buddies:osc}).start();
+    }).set({ buddies:osc }).start();
   }
 
   // play note: send signal to server and play sound
-  function playNote(key) {
-    socket.emit('sound_key', socket.io.engine.id+ "/" + key);
-    playSound(key);
+  function playNote(key_id) {
+    socket.emit('sound_key', socket.io.engine.id+ "/" + key_id);
+    //playSound(key);
   }
 
   // play sounds from other players
   socket.on('sound_key', function(msg) {
     var args = msg.split('/');
     var device_id = args[0];
-    if (device_id == socket.io.engine.id) return;
-    var key = args[1];
-    playSound(key);
+    //if (device_id == socket.io.engine.id) return;
+    var sound_key = args[1];
+    playSound(sound_key);
   });
 </script>
 
@@ -87,6 +87,7 @@ function getWidth() {
         console.log(key_note_x_size);
         console.log(key_freq_arr);
         console.log(key_note_x_arr);
+        console.log(key_note_x_arr.length);
 */
 
         var values = {
@@ -115,10 +116,8 @@ function getWidth() {
             var normDistStrength = (dist - this.restLength) /
                     (dist * this.mamb) * this.strength;
             delta.y *= normDistStrength * values.invMass * 0.2;
-            if (!this.a.fixed)
-                this.a.y += delta.y;
-            if (!this.b.fixed)
-                this.b.y -= delta.y;
+            if (!this.a.fixed) this.a.y += delta.y;
+            if (!this.b.fixed) this.b.y -= delta.y;
         };
 
 
@@ -129,7 +128,8 @@ function getWidth() {
               if (currentPlayingKey == i) return;
               currentPlayingKey = i;
               //console.log(x + ' play key: ' + i + ' - ' + key_note_x_arr[i]);
-              playNote(key_freq_arr[i]);
+              //playNote(key_freq_arr[i]);
+              playNote(i);
               return;
             }
           }
