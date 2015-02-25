@@ -11,8 +11,9 @@
   <script src="//paperjs.org/assets/js/paper.js"></script>
 
   <script src="js/timbre.js"></script>
+
 <script>
-function getWidth() {
+var getWidth = function() {
   if (self.innerHeight) {
     return self.innerWidth;
   }
@@ -25,12 +26,39 @@ function getWidth() {
     return document.body.clientWidth;
   }
 }
+
+var QueryString = function() {
+  // This function is anonymous, is executed immediately and 
+  // the return value is assigned to QueryString!
+  var query_string = {};
+  var query = window.location.search.substring(1);
+  var vars = query.split("&");
+  for (var i=0;i<vars.length;i++) {
+    var pair = vars[i].split("=");
+        // If first entry with this name
+    if (typeof query_string[pair[0]] === "undefined") {
+      query_string[pair[0]] = pair[1];
+        // If second entry with this name
+    } else if (typeof query_string[pair[0]] === "string") {
+      var arr = [ query_string[pair[0]], pair[1] ];
+      query_string[pair[0]] = arr;
+        // If third or later entry with this name
+    } else {
+      query_string[pair[0]].push(pair[1]);
+    }
+  } 
+    return query_string;
+} ();
 </script>
+
 <script>
   var socket = io();
-  var room = 'channel1';
+  var channel_id = QueryString.channel;
+
+  if (typeof channel_id == 'undefined') channel_id = 1;
+  
   //key number to frequency
-  function keyToFreq(n){
+  function keyToFreq(n) {
     return Math.pow(2 , (n - 49) / 12) * 440;
   }
   
@@ -74,14 +102,17 @@ function getWidth() {
           key_note_x_arr.push(key_note_x_arr[i - 1] + key_note_x_size);
         }
 
-        $.getJSON("get_patterns?channel=1", function(data) {
+        $.getJSON("get_patterns?channel=" + channel_id, function(data) {
           key_freq_arr = data;
           $('t#patterns-text').text(key_freq_arr);
+          $('t#channel-id-text').text(channel_id);
           console.log(key_freq_arr);
         });
 
 
         var currentPlayingKey = -1;
+
+
 
 /*
         console.log(browser_width);
@@ -213,7 +244,7 @@ function getWidth() {
 </head>
 <body>
   <div style="padding: 20px;">
-    <h4>Channel Pattern Frequencies: <t id="patterns-text"></t></h4>
+    <h4>Channel <t id="channel-id-text"></t> Pattern Frequencies: <t id="patterns-text"></t></h4>
   </div>
   <canvas id="canvas" resize hidpi="off"></canvas>
 </body>
