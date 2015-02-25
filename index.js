@@ -17,6 +17,7 @@ app.get('/assign_user_to_channel', function(req, res) {
   console.log('>> assign_user_to_channel: ' + client_id + ' -> ' + clients_table[client_id].channel);
 });
 
+
 app.get('/clients', function(req, res) {
   var clients = io.sockets.adapter.rooms['channel' + 1];
   var ret = [];
@@ -40,8 +41,28 @@ app.get('/clients', function(req, res) {
 });
 
 
+function getRandomInt(min, max) { return Math.floor(Math.random() * (max - min)) + min; }
+
 var channels_table = [];
 var clients_table = [];
+var num_channels = 4;
+var num_patterns = 5;
+
+for (var i = 0; i < num_channels; i++) {
+  channels_table[i] = [];
+  for (var j = 0; j < num_patterns; j++) {
+    var rand_pattern = getRandomInt(50, 70);
+    channels_table[i].push(rand_pattern);
+  }
+  console.log(channels_table[i]);
+}
+
+app.get('/get_patterns', function(req, res) {
+  var channel_id = req.param('channel');
+  console.log('>> get_patterns - channel' + channel_id);
+  res.json(channels_table[channel_id]);
+});
+
 
 
 io.on('connection', function(socket){
