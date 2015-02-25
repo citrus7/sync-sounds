@@ -63,6 +63,20 @@ app.get('/get_patterns', function(req, res) {
   res.json(channels_table[channel_id]);
 });
 
+app.get('/generate_patterns', function(req, res) {
+  var channel_id = req.param('channel');
+
+  channels_table[channel_id] = [];
+  for (var j = 0; j < num_patterns; j++) {
+    var rand_pattern = getRandomInt(50, 70);
+    channels_table[channel_id].push(rand_pattern);
+  }
+
+  console.log('>> generate_patterns - channel' + channel_id);
+  res.json('okay');
+});
+
+
 
 io.on('connection', function(socket){
   socket.join('channel' + 1);
