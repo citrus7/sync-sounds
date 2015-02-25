@@ -76,6 +76,7 @@ function getWidth() {
 
         $.getJSON("get_patterns?channel=1", function(data) {
           key_freq_arr = data;
+          $('t#patterns-text').text(key_freq_arr);
           console.log(key_freq_arr);
         });
 
@@ -211,6 +212,9 @@ function getWidth() {
 
 </head>
 <body>
+  <div style="padding: 20px;">
+    <h4>Channel Pattern Frequencies: <t id="patterns-text"></t></h4>
+  </div>
   <canvas id="canvas" resize hidpi="off"></canvas>
 </body>
 </html>

@@ -64,7 +64,6 @@ app.get('/get_patterns', function(req, res) {
 });
 
 
-
 io.on('connection', function(socket){
   socket.join('channel' + 1);
   socket.on('sound_key', function(msg) {
