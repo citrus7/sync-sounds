@@ -54,7 +54,7 @@ var QueryString = function() {
 <script>
   var socket = io();
   var channel_id = QueryString.channel;
-  var player_name = 'hello';
+  var player_name = 'Guest';
 
   if (typeof channel_id == 'undefined') channel_id = 0;
   
@@ -268,7 +268,7 @@ var QueryString = function() {
 <body>
   <div style="padding: 20px;">
     <p>
-      <input id="player-name-text" value="hello"/>
+      <input id="player-name-text" value="Guest"/>
       <button id="change-player-name-button" onclick="changePlayerName()">Update Name</button>
     </p>
     <p>

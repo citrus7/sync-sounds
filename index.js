@@ -97,7 +97,7 @@ io.on('connection', function(socket){
 
     if (clients_table[device_id] == null) {
       clients_table[device_id] = {
-        player_name: 'hello', 
+        player_name: 'Guest', 
         channel: 0,
         start_time: new Date().getTime()
       }
