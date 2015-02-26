@@ -51,7 +51,7 @@ var QueryString = function() {
     }
   } 
     return query_string;
-} ();
+}();
 </script>
 
 <script>
@@ -84,7 +84,6 @@ var QueryString = function() {
       'note_id': note_id
     };
     socket.emit('sound_key', pack);
-    //playSound(key);
   }
 
 
@@ -92,9 +91,9 @@ var QueryString = function() {
     $.getJSON("get_patterns?channel=" + channel_id, function(data) {
       $('t#patterns-text').text(data);
       $('t#channel-id-text').text(channel_id);
-      //console.log(data);
     });
   }
+  updateChannelInfo(channel_id);
 
   function changePlayerName() {
     $('button#change-player-name-button').hide();
@@ -125,8 +124,6 @@ var QueryString = function() {
         updateChannelInfo(cur_channel_id);
         break;
     }
-
-
   });
 </script>
 
@@ -137,17 +134,12 @@ var QueryString = function() {
         var num_patterns = 5;
         var key_note_x_arr = [];
         var key_note_x_size = browser_width / num_patterns;
+        var currentPlayingKey = -1;
         
         key_note_x_arr.push(key_note_x_size);
         for (var i = 1; i < num_patterns; i++) {
           key_note_x_arr.push(key_note_x_arr[i - 1] + key_note_x_size);
         }
-
-
-        updateChannelInfo(channel_id);
-        
-
-        var currentPlayingKey = -1;
 
 /*
         console.log(browser_width);

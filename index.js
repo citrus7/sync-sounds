@@ -1,16 +1,41 @@
+
 var express = require('express');
 var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
-app.use(express.static(__dirname + '/public'));
 
+// Pages
+// ------------------------------------------------------------------------------------------------------
+
+app.use(express.static(__dirname + '/public'));
 app.get('/',      function(req, res) { res.sendFile(__dirname + '/index.html'); });
 app.get('/admin', function(req, res) { res.sendFile(__dirname + '/admin.html'); });
 
 
+// Init
+// ------------------------------------------------------------------------------------------------------
 
-app.get('/clients', function(req, res) {
+function getRandomInt(min, max) { return Math.floor(Math.random() * (max - min)) + min; }
+
+var channels_table = [];
+var clients_table = [];
+var num_channels = 4;
+var num_patterns = 5;
+
+for (var i = 0; i < num_channels; i++) {
+  channels_table[i] = [];
+  for (var j = 0; j < num_patterns; j++) {
+    var rand_pattern = getRandomInt(50, 70);
+    channels_table[i].push(rand_pattern);
+  }
+  console.log(channels_table[i]);
+}
+
+// APIs
+// ------------------------------------------------------------------------------------------------------
+
+app.get('/get_clients', function(req, res) {
   var clients = io.sockets.adapter.rooms['sync_sounds'];
   var ret = [];
 
@@ -32,23 +57,6 @@ app.get('/clients', function(req, res) {
 
   res.json({ "data": ret });
 });
-
-
-function getRandomInt(min, max) { return Math.floor(Math.random() * (max - min)) + min; }
-
-var channels_table = [];
-var clients_table = [];
-var num_channels = 4;
-var num_patterns = 5;
-
-for (var i = 0; i < num_channels; i++) {
-  channels_table[i] = [];
-  for (var j = 0; j < num_patterns; j++) {
-    var rand_pattern = getRandomInt(50, 70);
-    channels_table[i].push(rand_pattern);
-  }
-  console.log(channels_table[i]);
-}
 
 app.get('/get_patterns', function(req, res) {
   var channel_id = req.param('channel');
@@ -97,6 +105,7 @@ app.get('/assign_user_to_channel', function(req, res) {
 });
 
 
+// Socket.io server
 // ------------------------------------------------------------------------------------------------------
 
 io.on('connection', function(socket){
@@ -128,6 +137,9 @@ io.on('connection', function(socket){
   });
 });
 
-http.listen(3000, function(){
+
+// ------------------------------------------------------------------------------------------------------
+
+http.listen(3000, function() { 
   console.log('listening on port 3000');
 });

@@ -51,7 +51,7 @@
     $(document).ready(function() {
       $("#channel-selector-box").dialog({ autoOpen: false });
 
-      $('#example').dataTable({ "ajax": '/clients' });
+      $('#example').dataTable({ "ajax": '/get_clients' });
 
       $('#example tbody').on('click', 'tr', function (){
         selected_client_id  = $('td', this).eq(0).text();
