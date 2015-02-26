@@ -19,7 +19,7 @@ app.get('/assign_user_to_channel', function(req, res) {
 
 
 app.get('/clients', function(req, res) {
-  var clients = io.sockets.adapter.rooms['channel' + 1];
+  var clients = io.sockets.adapter.rooms['sync_sounds'];
   var ret = [];
 
   for (var clientId in clients) {
@@ -31,9 +31,10 @@ app.get('/clients', function(req, res) {
     ret.push([
       cur.id,
       client_obj.player_name,
-      client_obj.channel,
       client_obj.start_time,
-      cur.client.conn.remoteAddress
+      cur.client.conn.remoteAddress,
+      client_obj.channel,
+      channels_table[client_obj.channel]
     ]);
   }
 
@@ -72,14 +73,14 @@ app.get('/generate_patterns', function(req, res) {
     channels_table[channel_id].push(rand_pattern);
   }
 
-  console.log('>> generate_patterns - channel' + channel_id);
+  console.log('>> generate_patterns - channel ' + channel_id);
   res.json('okay');
 });
 
 
 
 io.on('connection', function(socket){
-  socket.join('channel' + 1);
+  socket.join('sync_sounds');
   socket.on('sound_key', function(msg) {
     var args = msg.split('/');
     var device_id = args[0];
@@ -88,15 +89,17 @@ io.on('connection', function(socket){
     if (clients_table[device_id] == null) {
       clients_table[device_id] = {
         player_name: 'hello', 
-        channel: 1,
+        channel: 0,
         start_time: new Date().getTime()
       }
 
       console.log('New connection: ' + device_id);
     }
 
-    io.emit('sound_key', device_id + '/' + channels_table[1][key_id]);
-    console.log('>> Receive sound ' + key_id + ' -> ' + channels_table[1][key_id]);
+    var channel_id = clients_table[device_id].channel
+    io.emit('sound_key', device_id + '/' + channel_id + '/' + channels_table[channel_id][key_id]);
+
+    console.log('>> Receive sound ' + key_id + ' -> ' + channels_table[channel_id][key_id]);
   });
 });
 

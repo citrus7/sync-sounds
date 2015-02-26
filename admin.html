@@ -23,7 +23,7 @@
       if (selected_client_id < 0 || selected_channel_id < 0) return;
 
       $.ajax("/assign_user_to_channel?client=" + selected_client_id + "&channel=" + selected_channel_id)
-      .done(function() { 
+      .done(function() {
         console.log(selected_client_id + ' - ' + selected_channel_id);
       })
       .fail(function() {
@@ -31,6 +31,20 @@
       })
 
       $("#channel-selector-box").dialog("close");
+      location.reload();
+    }
+
+    function adminResetChannel() {
+      var channel_id = $('#channel-reset-options').val();
+
+      $.ajax("/generate_patterns?channel=" + channel_id)
+      .done(function() {
+        console.log('Okay: generate_patterns - ' + channel_id);
+      })
+      .fail(function() {
+        console.log('Fail: generate_patterns - ' + channel_id);
+      })
+
       location.reload();
     }
 
@@ -43,8 +57,8 @@
         selected_client_id  = $('td', this).eq(0).text();
         selected_channel_id = $('td', this).eq(2).text();
 
-        $("#channel-selector-box-client-name").text($('td', this).eq(1).text());
-        $("#channel-select-options option[value=" + selected_channel_id + "]").prop("selected", "selected");
+        //$("#channel-selector-box-client-name").text($('td', this).eq(1).text());
+        //$("#channel-select-options option[value=" + selected_channel_id + "]").prop("selected", "selected");
         $("#channel-selector-box").dialog("open");
       });
     });
@@ -57,10 +71,10 @@
     <h5 id="channel-selector-box-client-name"></h5>
     <p>
       <select id="channel-select-options">
+        <option value="0">Channel 0</option>
         <option value="1">Channel 1</option>
         <option value="2">Channel 2</option>
         <option value="3">Channel 3</option>
-        <option value="4">Channel 4</option>
       </select>
       <button id="channel-select-submit" onclick="adminPickChannel()">Submit</button>
     </p>
@@ -75,14 +89,26 @@
           <tr>
             <th>Client ID</th>
             <th>Name</th>
-            <th class="channel-selector">Channel</th>
             <th>Join Time</th>
             <th>IP</th>
+            <th class="channel-selector">Channel</th>
+            <th>Patterns</th>            
           </tr>
         </thead>
         <tbody></tbody>
       </table>
+    </section>
 
-
+    <section>
+      Reset Channel Patterns: 
+      <select id="channel-reset-options">
+        <option value="0">Channel 0</option>
+        <option value="1">Channel 1</option>
+        <option value="2">Channel 2</option>
+        <option value="3">Channel 3</option>
+      </select>
+      <button onclick="adminResetChannel()">Reset</button>
+    </section>
+  </div>
 </body>
 </html>

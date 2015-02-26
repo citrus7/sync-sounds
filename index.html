@@ -55,7 +55,7 @@ var QueryString = function() {
   var socket = io();
   var channel_id = QueryString.channel;
 
-  if (typeof channel_id == 'undefined') channel_id = 1;
+  if (typeof channel_id == 'undefined') channel_id = 0;
   
   //key number to frequency
   function keyToFreq(n) {
@@ -79,12 +79,28 @@ var QueryString = function() {
     //playSound(key);
   }
 
+
+  function updateChannelInfo(channel_id) {
+    $.getJSON("get_patterns?channel=" + channel_id, function(data) {
+      $('t#patterns-text').text(data);
+      $('t#channel-id-text').text(channel_id);
+      //console.log(data);
+    });
+  }
+
   // play sounds from other players
   socket.on('sound_key', function(msg) {
     var args = msg.split('/');
     var device_id = args[0];
     //if (device_id == socket.io.engine.id) return;
-    var sound_key = args[1];
+    var cur_channel_id = args[1];
+    var sound_key = args[2];
+
+    if (channel_id != cur_channel_id) {
+      channel_id = cur_channel_id;
+      updateChannelInfo(channel_id);
+    }
+
     playSound(sound_key);
   });
 </script>
@@ -92,27 +108,21 @@ var QueryString = function() {
 
  <script type="text/paperscript" canvas="canvas">
         var browser_width = getWidth();
-        //var key_freq_arr = [ 52, 54, 56, 57, 59, 61, 63, 53, 55, 58, 60, 62 ];
-        var key_freq_arr = [ 53, 55, 58, 60, 62 ];
+        var key_freq_arr = [];
+        var num_patterns = 5;
         var key_note_x_arr = [];
-        var key_note_x_size = browser_width / key_freq_arr.length;
+        var key_note_x_size = browser_width / num_patterns;
         
         key_note_x_arr.push(key_note_x_size);
-        for (var i = 1; i < key_freq_arr.length; i++) {
+        for (var i = 1; i < num_patterns; i++) {
           key_note_x_arr.push(key_note_x_arr[i - 1] + key_note_x_size);
         }
 
-        $.getJSON("get_patterns?channel=" + channel_id, function(data) {
-          key_freq_arr = data;
-          $('t#patterns-text').text(key_freq_arr);
-          $('t#channel-id-text').text(channel_id);
-          console.log(key_freq_arr);
-        });
 
+        updateChannelInfo(channel_id);
+        
 
         var currentPlayingKey = -1;
-
-
 
 /*
         console.log(browser_width);
