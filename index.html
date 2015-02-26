@@ -13,6 +13,9 @@
   <script src="js/timbre.js"></script>
 
 <script>
+/*
+    Helper functions
+*/
 var getWidth = function() {
   if (self.innerHeight) {
     return self.innerWidth;
@@ -75,8 +78,12 @@ var QueryString = function() {
   }
 
   // play note: send signal to server and play sound
-  function playNote(key_id) {
-    socket.emit('sound_key', socket.io.engine.id+ "/" + key_id);
+  function playNote(note_id) {
+    var pack = {
+      'client': socket.io.engine.id,
+      'note_id': note_id
+    };
+    socket.emit('sound_key', pack);
     //playSound(key);
   }
 
@@ -102,18 +109,24 @@ var QueryString = function() {
 
   // play sounds from other players
   socket.on('sound_key', function(msg) {
-    var args = msg.split('/');
-    var device_id = args[0];
-    //if (device_id == socket.io.engine.id) return;
-    var cur_channel_id = args[1];
-    var sound_key = args[2];
 
-    if (channel_id != cur_channel_id) {
-      channel_id = cur_channel_id;
-      updateChannelInfo(channel_id);
+    switch(msg.type) {
+      case 'sound':
+        var device_id = msg.client;
+        var cur_channel_id = msg.channel;
+        var sound_key = msg.freq;
+
+        if (channel_id == cur_channel_id) playSound(sound_key);
+        break;
+
+      case 'update_channel':
+        var cur_channel_id = msg.channel;
+        channel_id = cur_channel_id;
+        updateChannelInfo(cur_channel_id);
+        break;
     }
 
-    playSound(sound_key);
+
   });
 </script>
 

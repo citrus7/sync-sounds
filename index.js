@@ -8,15 +8,6 @@ app.use(express.static(__dirname + '/public'));
 app.get('/',      function(req, res) { res.sendFile(__dirname + '/index.html'); });
 app.get('/admin', function(req, res) { res.sendFile(__dirname + '/admin.html'); });
 
-app.get('/assign_user_to_channel', function(req, res) {
-  var client_id  = req.param('client');
-  var channel_id = req.param('channel');
-  
-  clients_table[client_id].channel = channel_id;
-
-  console.log('>> assign_user_to_channel: ' + client_id + ' -> ' + clients_table[client_id].channel);
-  res.json('okay');
-});
 
 
 app.get('/clients', function(req, res) {
@@ -88,12 +79,31 @@ app.get('/update_player_name', function(req, res) {
   res.json('okay');
 });
 
+app.get('/assign_user_to_channel', function(req, res) {
+  var client_id  = req.param('client');
+  var channel_id = req.param('channel');
+  
+  clients_table[client_id].channel = channel_id;
+
+  var pack = {
+    'type': 'update_channel',
+    'client': client_id,
+    'channel': channel_id
+  };
+  io.emit('sound_key', pack);
+
+  console.log('>> assign_user_to_channel: ' + client_id + ' -> ' + clients_table[client_id].channel);
+  res.json('okay');
+});
+
+
+// ------------------------------------------------------------------------------------------------------
+
 io.on('connection', function(socket){
   socket.join('sync_sounds');
   socket.on('sound_key', function(msg) {
-    var args = msg.split('/');
-    var device_id = args[0];
-    var key_id = args[1];
+    var device_id = msg.client;
+    var note_id = msg.note_id;
 
     if (clients_table[device_id] == null) {
       clients_table[device_id] = {
@@ -106,9 +116,15 @@ io.on('connection', function(socket){
     }
 
     var channel_id = clients_table[device_id].channel
-    io.emit('sound_key', device_id + '/' + channel_id + '/' + channels_table[channel_id][key_id]);
+    var pack = {
+      'type': 'sound',
+      'client': device_id,
+      'freq': channels_table[channel_id][note_id],
+      'channel': channel_id
+    };
+    io.emit('sound_key', pack);
 
-    console.log('>> Receive sound ' + key_id + ' -> ' + channels_table[channel_id][key_id]);
+    console.log('>> Receive sound ' + note_id + ' -> ' + channels_table[channel_id][note_id]);
   });
 });
 
