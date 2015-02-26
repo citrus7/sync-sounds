@@ -69,8 +69,8 @@ var QueryString = function() {
   var freq = 800;
   
     //play the sound
-  function playSound(sound_key) {
-    var freq = keyToFreq(sound_key);
+  function playSound(sync_sounds_station) {
+    var freq = keyToFreq(sync_sounds_station);
     var osc = T("sin", { freq: freq, mul: 0.5 });
     T("timeout", { timeout: 500 }).on("ended", function() {
       this.stop();
@@ -83,7 +83,7 @@ var QueryString = function() {
       'client': socket.io.engine.id,
       'note_id': note_id
     };
-    socket.emit('sound_key', pack);
+    socket.emit('sync_sounds_station', pack);
   }
 
 
@@ -107,15 +107,15 @@ var QueryString = function() {
   }
 
   // play sounds from other players
-  socket.on('sound_key', function(msg) {
+  socket.on('sync_sounds_station', function(msg) {
 
     switch(msg.type) {
       case 'sound':
         var device_id = msg.client;
         var cur_channel_id = msg.channel;
-        var sound_key = msg.freq;
+        var sync_sounds_station = msg.freq;
 
-        if (channel_id == cur_channel_id) playSound(sound_key);
+        if (channel_id == cur_channel_id) playSound(sync_sounds_station);
         break;
 
       case 'update_channel':

@@ -98,7 +98,7 @@ app.get('/assign_user_to_channel', function(req, res) {
     'client': client_id,
     'channel': channel_id
   };
-  io.emit('sound_key', pack);
+  io.emit('sync_sounds_station', pack);
 
   console.log('>> assign_user_to_channel: ' + client_id + ' -> ' + clients_table[client_id].channel);
   res.json('okay');
@@ -110,7 +110,7 @@ app.get('/assign_user_to_channel', function(req, res) {
 
 io.on('connection', function(socket){
   socket.join('sync_sounds');
-  socket.on('sound_key', function(msg) {
+  socket.on('sync_sounds_station', function(msg) {
     var device_id = msg.client;
     var note_id = msg.note_id;
 
@@ -131,7 +131,7 @@ io.on('connection', function(socket){
       'freq': channels_table[channel_id][note_id],
       'channel': channel_id
     };
-    io.emit('sound_key', pack);
+    io.emit('sync_sounds_station', pack);
 
     console.log('>> Receive sound ' + note_id + ' -> ' + channels_table[channel_id][note_id]);
   });
