@@ -15,6 +15,7 @@ app.get('/assign_user_to_channel', function(req, res) {
   clients_table[client_id].channel = channel_id;
 
   console.log('>> assign_user_to_channel: ' + client_id + ' -> ' + clients_table[client_id].channel);
+  res.json('okay');
 });
 
 
@@ -77,7 +78,15 @@ app.get('/generate_patterns', function(req, res) {
   res.json('okay');
 });
 
+app.get('/update_player_name', function(req, res) {
+  var client_id = req.param('client');
+  var new_name = req.param('name');
 
+  clients_table[client_id].player_name = new_name;
+
+  console.log('>> update_player_name - client_id' + client_id + ', name: ' + new_name);
+  res.json('okay');
+});
 
 io.on('connection', function(socket){
   socket.join('sync_sounds');

@@ -54,6 +54,7 @@ var QueryString = function() {
 <script>
   var socket = io();
   var channel_id = QueryString.channel;
+  var player_name = 'hello';
 
   if (typeof channel_id == 'undefined') channel_id = 0;
   
@@ -85,6 +86,17 @@ var QueryString = function() {
       $('t#patterns-text').text(data);
       $('t#channel-id-text').text(channel_id);
       //console.log(data);
+    });
+  }
+
+  function changePlayerName() {
+    $('button#change-player-name-button').hide();
+    var new_name = $('#player-name-text').val();
+    player_name = new_name;
+
+    $.getJSON("update_player_name?client=" + socket.io.engine.id + "&name=" + new_name, function(data) {
+      $('button#change-player-name-button').show();
+      $('#player-name-text').val(new_name);
     });
   }
 
@@ -249,12 +261,19 @@ var QueryString = function() {
 
     </script>
 
-<script></script>
+<script>
+</script>
 
 </head>
 <body>
   <div style="padding: 20px;">
-    <h4>Channel <t id="channel-id-text"></t> Pattern Frequencies: <t id="patterns-text"></t></h4>
+    <p>
+      <input id="player-name-text" value="hello"/>
+      <button id="change-player-name-button" onclick="changePlayerName()">Update Name</button>
+    </p>
+    <p>
+      <h4>Channel <t id="channel-id-text"></t> Pattern Frequencies: <t id="patterns-text"></t></h4>
+    </p>
   </div>
   <canvas id="canvas" resize hidpi="off"></canvas>
 </body>
