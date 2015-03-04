@@ -66,12 +66,32 @@ var QueryString = function() {
     return Math.pow(2 , (n - 49) / 12) * 440;
   }
   
-  var freq = 800;
-  
-    //play the sound
+
+  //example sequence
+  var soundArray = [[52,1,500],[53,0.7,600],[54,0.3,400],[55,0.8,800]];
+  var seqLength = soundArray.length;
+  var seqInd = 0
+   //sequence
+  var bpm = 600
+  var interval = setInterval(function() {playItem(soundArray[seqInd%seqLength])}, 700);
+  //Play Sequence
+  //Takes in an array with [pitch,volume,duration]
+  //pitch varies from 0-82
+  //volume from 0-1
+  //duration in ms
+	function playItem(soundItem){
+		var freq = keyToFreq(soundItem[0]);
+		var osc = T("sin", { freq: freq, mul: soundItem[1] });
+		T("timeout", { timeout: soundItem[2] }).on("ended", function() {
+		  this.stop();
+		  seqInd++;
+		}).set({ buddies:osc }).start();
+	}
+	
+   //play the sound
   function playSound(sound_val) {
     var freq = keyToFreq(sound_val);
-    var osc = T("sin", { freq: freq, mul: 0.5 });
+    var osc = T("sin", { freq: freq, mul: 0.1 });
     T("timeout", { timeout: 500 }).on("ended", function() {
       this.stop();
     }).set({ buddies:osc }).start();
