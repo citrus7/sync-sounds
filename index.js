@@ -26,8 +26,14 @@ var num_patterns = 5;
 for (var i = 0; i < num_channels; i++) {
   channels_table[i] = [];
   for (var j = 0; j < num_patterns; j++) {
-    var rand_pattern = getRandomInt(50, 70);
-    channels_table[i].push(rand_pattern);
+    //generate pitch
+	var rand_pitch = getRandomInt(50, 70);
+	//generate volume
+	var rand_vol = getRandomInt(0, 100);
+	//generate duration
+    var rand_dur = getRandomInt(400, 1000);
+	var note = [rand_pitch,rand_vol,rand_dur];
+    channels_table[i].push(note);
   }
   console.log(channels_table[i]);
 }
@@ -75,7 +81,7 @@ app.get('/generate_patterns', function(req, res) {
 	var rand_vol = getRandomInt(0, 100);
 	//generate duration
     var rand_dur = getRandomInt(400, 1000);
-	var note = [rand_pitch,rand_vol,randdur];
+	var note = [rand_pitch,rand_vol,rand_dur];
     channels_table[channel_id].push(note);
   }
 
