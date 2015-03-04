@@ -108,11 +108,11 @@ var QueryString = function() {
 
   function changePlayerChannel() {
     $('button#change-player-channel-button').hide();
-    var new_channel = $('#player-channel-text').val();
+    var new_channel = $('#player-channel-options').val();
 
     $.getJSON("assign_user_to_channel?client=" + socket.io.engine.id + "&channel=" + new_channel, function(data) {
       $('button#change-player-channel-button').show();
-      $('#player-channel-text').val(new_channel);
+      $('#player-channel-options').val(new_channel);
     });
   }
 
@@ -286,8 +286,13 @@ var QueryString = function() {
       <button id="change-player-name-button" onclick="changePlayerName()">Update Name</button>
     </p>
     <p>
-      <input id="player-channel-text" value="0"/>
-      <button id="change-player-channel-button" onclick="changePlayerChannel()">Update Name</button>
+      <select id="player-channel-options">
+        <option value="0">Channel 0</option>
+        <option value="1">Channel 1</option>
+        <option value="2">Channel 2</option>
+        <option value="3">Channel 3</option>
+      </select>
+      <button id="change-player-channel-button" onclick="changePlayerChannel()">Change Channel</button>
     </p>
     <p>
       <h4>Channel <t id="channel-id-text"></t> Pattern Frequencies: <t id="patterns-text"></t></h4>
