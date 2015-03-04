@@ -2,13 +2,13 @@
 <html>
 <head>
   <title>sync-sounds</title>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+  <script src="js/jquery.min.js"></script>
 
   <script type="text/javascript" src="js/paper-full.min.js"></script>
-  <script src="//cdn.socket.io/socket.io-1.2.0.js"></script>
+  <script src="js/socket.js"></script>
 
-  <link rel="stylesheet" href="//paperjs.org/assets/css/style.css"/>
-  <script src="//paperjs.org/assets/js/paper.js"></script>
+  <link rel="stylesheet" href="js/css/style.css"/>
+  <script src="js/paper.js"></script>
 
   <script src="js/timbre.js"></script>
 
@@ -103,6 +103,16 @@ var QueryString = function() {
     $.getJSON("update_player_name?client=" + socket.io.engine.id + "&name=" + new_name, function(data) {
       $('button#change-player-name-button').show();
       $('#player-name-text').val(new_name);
+    });
+  }
+
+  function changePlayerChannel() {
+    $('button#change-player-channel-button').hide();
+    var new_channel = $('#player-channel-text').val();
+
+    $.getJSON("assign_user_to_channel?client=" + socket.io.engine.id + "&channel=" + new_channel, function(data) {
+      $('button#change-player-channel-button').show();
+      $('#player-channel-text').val(new_channel);
     });
   }
 
@@ -274,6 +284,10 @@ var QueryString = function() {
     <p>
       <input id="player-name-text" value="Guest"/>
       <button id="change-player-name-button" onclick="changePlayerName()">Update Name</button>
+    </p>
+    <p>
+      <input id="player-channel-text" value="0"/>
+      <button id="change-player-channel-button" onclick="changePlayerChannel()">Update Name</button>
     </p>
     <p>
       <h4>Channel <t id="channel-id-text"></t> Pattern Frequencies: <t id="patterns-text"></t></h4>
