@@ -86,6 +86,10 @@ var QueryString = function() {
     socket.emit('sync_sounds_station', pack);
   }
 
+  function displayMessage(message_content) {
+    console.log(message_content);
+    $('#display-message-content').text('>> ' + message_content);
+  }
 
   function updateChannelInfo(channel_id) {
     $.getJSON("get_patterns?channel=" + channel_id, function(data) {
@@ -131,6 +135,11 @@ var QueryString = function() {
         var cur_channel_id = msg.channel;
         channel_id = cur_channel_id;
         updateChannelInfo(cur_channel_id);
+        break;
+
+      case 'admin_msg':
+        if (socket.io.engine.id != msg.client) break;
+        displayMessage(msg.message);
         break;
     }
   });
@@ -297,6 +306,9 @@ var QueryString = function() {
     <p>
       <h4>Channel <t id="channel-id-text"></t> Pattern Frequencies: <t id="patterns-text"></t></h4>
     </p>
+    <p>
+      <h5 id="display-message-content"></h5>
+    </o>
   </div>
   <canvas id="canvas" resize hidpi="off"></canvas>
 </body>

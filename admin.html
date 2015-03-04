@@ -48,6 +48,20 @@
       location.reload();
     }
 
+    function adminSendMessageToClient() {
+      var message = $('#send-player-msg-input').val();
+
+      $.ajax("/send_message_to_client?client=" + selected_client_id + "&msg=" + message)
+      .done(function() {
+        console.log('Okay: send_message_to_client - ' + selected_client_id);
+      })
+      .fail(function() {
+        console.log('Fail: send_message_to_client - ' + selected_client_id);
+      })
+
+      location.reload();
+    }
+
     $(document).ready(function() {
       $("#channel-selector-box").dialog({ autoOpen: false });
 
@@ -57,7 +71,7 @@
         selected_client_id  = $('td', this).eq(0).text();
         selected_channel_id = $('td', this).eq(2).text();
 
-        //$("#channel-selector-box-client-name").text($('td', this).eq(1).text());
+        $("#channel-selector-box-client-name").text($('td', this).eq(1).text());
         //$("#channel-select-options option[value=" + selected_channel_id + "]").prop("selected", "selected");
         $("#channel-selector-box").dialog("open");
       });
@@ -77,6 +91,10 @@
         <option value="3">Channel 3</option>
       </select>
       <button id="channel-select-submit" onclick="adminPickChannel()">Submit</button>
+    </p>
+    <p>
+      <input id="send-player-msg-input"/>
+      <button id="send-player-msg-button" onclick="adminSendMessageToClient()">Send Message</button>
     </p>
   </div>
 

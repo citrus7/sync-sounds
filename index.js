@@ -64,6 +64,23 @@ app.get('/get_patterns', function(req, res) {
   res.json(channels_table[channel_id]);
 });
 
+
+app.get('/send_message_to_client', function(req, res) {
+  var client_id = req.param('client');
+  var message = req.param('msg');
+
+  var pack = {
+    'type': 'admin_msg',
+    'client': client_id,
+    'message': message
+  };
+  io.emit('sync_sounds_station', pack);
+
+  console.log('>> send_message_to_client - client ' + client_id);
+  res.json('okay');
+});
+
+
 app.get('/generate_patterns', function(req, res) {
   var channel_id = req.param('channel');
 
