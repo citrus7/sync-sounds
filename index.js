@@ -21,7 +21,7 @@ function getRandomInt(min, max) { return Math.floor(Math.random() * (max - min))
 var channels_table = [];
 var clients_table = [];
 var num_channels = 4;
-var num_patterns = 5;
+var num_patterns = 16;
 
 for (var i = 0; i < num_channels; i++) {
   channels_table[i] = [];
@@ -133,7 +133,7 @@ app.get('/assign_user_to_channel', function(req, res) {
   res.json('okay');
 });
 //send music packets at interval
-var bpm = 1200;
+var bpm = 12;
 var noteIterator = 0;
 var interval = setInterval(function() {  
 								noteIterator++;
@@ -144,12 +144,13 @@ var interval = setInterval(function() {
 								for (channel_id in channels_table){
 										var pack = {'type': 'play_note',
 										'note': channels_table[channel_id][noteIterator],
+										'bpm':bpm,
 										'channel': channel_id
 										}
 										io.emit('sync_sounds_station', pack);
 									};
 										
-	}, bpm);
+	}, (bpm*100));
 
 // Socket.io server
 // ------------------------------------------------------------------------------------------------------
