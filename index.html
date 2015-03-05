@@ -3,8 +3,7 @@
 <head>
   <title>sync-sounds</title>
   <script src="js/jquery.min.js"></script>
-
-  <script type="text/javascript" src="js/nexusUI.js"></script>
+  <script src="js/nexusUI.js"></script>
   <script type="text/javascript" src="js/paper-full.min.js"></script>
   <script src="js/socket.js"></script>
 
@@ -68,24 +67,20 @@ var QueryString = function() {
   }
   
 
-  //example sequence
-  var soundArray = [[52,1,500],[53,0.7,600],[54,0.3,400],[55,0.8,800]];
-  var seqLength = soundArray.length;
-  var seqInd = 0
-   //sequence
-  //var bpm = 600
-  //var interval = setInterval(function() {playItem(soundArray[seqInd%seqLength])}, 700);
   //Play Sequence
   //Takes in an array with [pitch,volume,duration]
   //pitch varies from 0-82
   //volume from 0-1
   //duration in ms
 	function playItem(soundItem){
-		var freq = keyToFreq(soundItem[0]);
-		var osc = T("tri", { freq: freq, mul: soundItem[1] });
+		var vol = volSlider.val["value"]*(soundItem[1]/100);
+		var oct = Math.floor(octSlider.val["value"]*50/12)*12;
+		var pitch = pitchSlider.val;
+	
+		var freq = keyToFreq(soundItem[0]+oct);
+		var osc = T("tri", { freq: freq, mul: vol });
 		T("timeout", { timeout: soundItem[2] }).on("ended", function() {
 		  this.stop();
-		  seqInd++;
 		}).set({ buddies:osc }).start();
 	}
 	
@@ -240,7 +235,7 @@ var QueryString = function() {
 
         function createPath(strength) {
             var path = new Path({
-                fillColor: '#00FF80'
+                fillColor: '#00FFFF'
             });
             springs = [];
             for (var i = 0; i <= values.amount; i++) {
@@ -311,32 +306,68 @@ var QueryString = function() {
 
     </script>
 
-<script>
+  <script>
+	//NexusUI items
+	nx.onload = function() {
+		
+	  nx.colorize("#00FFFF"); // sets accent (default)
+	  nx.colorize("border", "#00FFFF");
+	  nx.colorize("fill", "#A4A4A4");
+	  
+	metro.speed = 12
+	
+	piano.midibase = 48;	
+	piano.click = function(){
+				var key = piano.val;
+				console.log(key);
+				};
+	
+	}
+
 </script>
 
 </head>
-<body>
+<body bgcolor="#E6E6E6">
+<center>
   <div style="padding: 20px;">
+    <p>
+      <h4>Channel <t id="channel-id-text"></t> Pattern Frequencies: <t id="patterns-text"></t></h4>
+    </p>
     <p>
       <input id="player-name-text" value="Guest"/>
       <button id="change-player-name-button" onclick="changePlayerName()">Update Name</button>
-    </p>
-    <p>
+
       <select id="player-channel-options">
         <option value="0">Channel 0</option>
         <option value="1">Channel 1</option>
         <option value="2">Channel 2</option>
         <option value="3">Channel 3</option>
       </select>
+	  
       <button id="change-player-channel-button" onclick="changePlayerChannel()">Change Channel</button>
     </p>
     <p>
-      <h4>Channel <t id="channel-id-text"></t> Pattern Frequencies: <t id="patterns-text"></t></h4>
-    </p>
-    <p>
       <h5 id="display-message-content"></h5>
-    </o>
   </div>
+ </center>
+ 
+ <center>
+	 <div>
+		<p>
+			<canvas nx="metro" id="metro" height="50" width="500"></canvas>
+		</p>
+
+		<p>
+			<canvas nx="slider" id="volSlider" height="200" width="50"></canvas>
+			<canvas nx="slider" id="octSlider" height="200" width="50"></canvas>
+			<canvas nx="position" id="pitchSlider" height="200" width="400"></canvas>
+		</p>
+		<p>
+			<canvas nx="keyboard" id="piano" height="200" width="500"></canvas>
+		</p>
+	 </div>
+ </center>
+
   <canvas id="canvas" resize hidpi="off"></canvas>
 </body>
 </html>
