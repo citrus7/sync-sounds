@@ -87,7 +87,8 @@ var QueryString = function() {
    //play the sound
   function playSound(sound_val) {
     var freq = keyToFreq(sound_val);
-    var osc = T("sin", { freq: freq, mul: 0.1 });
+	var vol = volSlider.val["value"];
+    var osc = T("sin", { freq: freq, mul: vol });
     T("timeout", { timeout: 500 }).on("ended", function() {
       this.stop();
     }).set({ buddies:osc }).start();
@@ -160,6 +161,10 @@ var QueryString = function() {
 	  case 'play_note':
         if (channel_id == msg.channel) { 
 			playItem(msg.note);
+			if(bpm != msg.bpm){
+				bpm = msg.bpm;
+				metro.speed = bpm;
+			}
 		}
         break;
     }
@@ -307,6 +312,7 @@ var QueryString = function() {
     </script>
 
   <script>
+	var bpm = 12;
 	//NexusUI items
 	nx.onload = function() {
 		
@@ -314,13 +320,15 @@ var QueryString = function() {
 	  nx.colorize("border", "#00FFFF");
 	  nx.colorize("fill", "#A4A4A4");
 	  
-	metro.speed = 12
+	metro.speed = bpm;
 	
 	piano.midibase = 48;	
-	piano.click = function(){
+	piano.on('*',function(data){
 				var key = piano.val;
-				console.log(key);
-				};
+				playSound(key["note"]);
+				console.log(key["note"]);
+				});
+
 	
 	}
 
