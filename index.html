@@ -82,7 +82,7 @@ var QueryString = function() {
   //duration in ms
 	function playItem(soundItem){
 		var freq = keyToFreq(soundItem[0]);
-		var osc = T("sin", { freq: freq, mul: soundItem[1] });
+		var osc = T("tri", { freq: freq, mul: soundItem[1] });
 		T("timeout", { timeout: soundItem[2] }).on("ended", function() {
 		  this.stop();
 		  seqInd++;
