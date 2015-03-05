@@ -73,8 +73,8 @@ var QueryString = function() {
   var seqLength = soundArray.length;
   var seqInd = 0
    //sequence
-  var bpm = 600
-  var interval = setInterval(function() {playItem(soundArray[seqInd%seqLength])}, 700);
+  //var bpm = 600
+  //var interval = setInterval(function() {playItem(soundArray[seqInd%seqLength])}, 700);
   //Play Sequence
   //Takes in an array with [pitch,volume,duration]
   //pitch varies from 0-82
@@ -143,7 +143,6 @@ var QueryString = function() {
 
   // play sounds from other players
   socket.on('sync_sounds_station', function(msg) {
-
     switch(msg.type) {
       case 'sound':
         if (channel_id == msg.channel) { 
@@ -161,6 +160,12 @@ var QueryString = function() {
       case 'admin_msg':
         if (socket.io.engine.id != msg.client) break;
         displayMessage(msg.message);
+        break;
+		
+	  case 'play_note':
+        if (channel_id == msg.channel) { 
+			playItem(msg.note);
+		}
         break;
     }
   });
