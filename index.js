@@ -16,8 +16,18 @@ app.get('/admin', function(req, res) { res.sendFile(__dirname + '/admin.html'); 
 // Init
 // ------------------------------------------------------------------------------------------------------
 
-function getRandomInt(min, max) { return Math.floor(Math.random() * (max - min)) + min; }
+/*
+  Helper function
+  Generate a random integer between [min] and [max]
+*/
+function getRandomInt(min, max) { 
+  return Math.floor(Math.random() * (max - min)) + min; 
+}
 
+/*
+  Initialize the music patterns at the beginning.
+  Assign the music patterns to channels
+*/
 var channels_table = [];
 var clients_table = [];
 var num_channels = 4;
@@ -41,6 +51,9 @@ for (var i = 0; i < num_channels; i++) {
 // APIs
 // ------------------------------------------------------------------------------------------------------
 
+/*
+  Return a list of online clients
+*/
 app.get('/get_clients', function(req, res) {
   var clients = io.sockets.adapter.rooms['sync_sounds'];
   var ret = [];
@@ -64,13 +77,19 @@ app.get('/get_clients', function(req, res) {
   res.json({ "data": ret });
 });
 
+  Pass the channel_id to this API
+/*
+  Return the music patterns of given channel 
+*/
 app.get('/get_patterns', function(req, res) {
   var channel_id = req.param('channel');
   console.log('>> get_patterns - channel' + channel_id);
   res.json(channels_table[channel_id]);
 });
 
-
+/*
+  Send a text message to a client
+*/
 app.get('/send_message_to_client', function(req, res) {
   var client_id = req.param('client');
   var message = req.param('msg');
@@ -86,7 +105,10 @@ app.get('/send_message_to_client', function(req, res) {
   res.json('okay');
 });
 
-
+/*
+  Generate random music patterns for the given channel
+  No data return
+*/
 app.get('/generate_patterns', function(req, res) {
   var channel_id = req.param('channel');
 
@@ -106,6 +128,10 @@ app.get('/generate_patterns', function(req, res) {
   res.json('okay');
 });
 
+
+/*
+  Update (player) client's name
+*/
 app.get('/update_player_name', function(req, res) {
   var client_id = req.param('client');
   var new_name = req.param('name');
@@ -116,6 +142,9 @@ app.get('/update_player_name', function(req, res) {
   res.json('okay');
 });
 
+/*
+  Assign a client to another channel
+*/
 app.get('/assign_user_to_channel', function(req, res) {
   var client_id  = req.param('client');
   var channel_id = req.param('channel');
@@ -155,12 +184,16 @@ var interval = setInterval(function() {
 // Socket.io server
 // ------------------------------------------------------------------------------------------------------
 
+/*
+  Socket.io connection
+*/
 io.on('connection', function(socket){
   socket.join('sync_sounds');
   socket.on('sync_sounds_station', function(msg) {
     var device_id = msg.client;
     var note_id = msg.note_id;
 
+    // Create a new client (as guest)
     if (clients_table[device_id] == null) {
       clients_table[device_id] = {
         player_name: 'Guest', 
@@ -171,6 +204,7 @@ io.on('connection', function(socket){
       console.log('New connection: ' + device_id);
     }
 
+    // Once server received an action from a client, server emits it to other clients (everybody)
     var channel_id = clients_table[device_id].channel
     var pack = {
       'type': 'sound',
@@ -188,5 +222,5 @@ io.on('connection', function(socket){
 // ------------------------------------------------------------------------------------------------------
 
 http.listen(3000, function() { 
-  console.log('listening on port 3000');
+  console.log('Listening on port 3000');
 });
