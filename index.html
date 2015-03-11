@@ -4,11 +4,9 @@
   <title>sync-sounds</title>
   <script src="js/jquery.min.js"></script>
   <script src="js/nexusUI.js"></script>
-  <script type="text/javascript" src="js/paper-full.min.js"></script>
   <script src="js/socket.js"></script>
 
   <link rel="stylesheet" href="js/css/style.css"/>
-  <script src="js/paper.js"></script>
 
   <script src="js/timbre.js"></script>
 
@@ -181,153 +179,6 @@ var QueryString = function() {
   });
 </script>
 
-
- <script type="text/paperscript" canvas="canvas">
-        var browser_width = getWidth();
-        // the frequency value of each key
-        var key_freq_arr = [];
-        // number of patterns
-        var num_patterns = 5;
-        // the X positions of the keys
-        var key_note_x_arr = [];
-        // The width of each key
-        var key_note_x_size = browser_width / num_patterns;
-        var currentPlayingKey = -1;
-        
-        // init
-        key_note_x_arr.push(key_note_x_size);
-        for (var i = 1; i < num_patterns; i++) {
-          key_note_x_arr.push(key_note_x_arr[i - 1] + key_note_x_size);
-        }
-
-        // For debuginng
-/*
-        console.log(browser_width);
-        console.log(key_note_x_size);
-        console.log(key_freq_arr);
-        console.log(key_note_x_arr);
-        console.log(key_note_x_arr.length);
-*/
-
-        // Refer to paper.js example
-        // http://paperjs.org/examples/future-splash/
-        var values = {
-            friction: 0.8,
-            timeStep: 0.01,
-            amount: 15,
-            mass: 2,
-            count: 0
-        };
-        values.invMass = 1 / values.mass;
-
-        var path, springs;
-        var size = view.size * [1.2, 1];
-
-        var Spring = function(a, b, strength, restLength) {
-            this.a = a;
-            this.b = b;
-            this.restLength = restLength || 80;
-            this.strength = strength ? strength : 0.55;
-            this.mamb = values.invMass * values.invMass;
-        };
-
-        Spring.prototype.update = function() {
-            var delta = this.b - this.a;
-            var dist = delta.length;
-            var normDistStrength = (dist - this.restLength) /
-                    (dist * this.mamb) * this.strength;
-            delta.y *= normDistStrength * values.invMass * 0.2;
-            if (!this.a.fixed) this.a.y += delta.y;
-            if (!this.b.fixed) this.b.y -= delta.y;
-        };
-
-
-        function checkCurrentTapPosition(x, y) {
-
-          for (var i = 0; i < key_note_x_arr.length; i++) {
-            if (x < key_note_x_arr[i]) {
-              if (currentPlayingKey == i) return;
-              currentPlayingKey = i;
-              //console.log(x + ' play key: ' + i + ' - ' + key_note_x_arr[i]);
-              //playNote(key_freq_arr[i]);
-              playNote(i);
-              return;
-            }
-          }
-        }
-
-        function createPath(strength) {
-            var path = new Path({
-                fillColor: '#00FFFF'
-            });
-            springs = [];
-            for (var i = 0; i <= values.amount; i++) {
-                var segment = path.add(new Point(i / values.amount, 0.5) * size);
-                var point = segment.point;
-                if (i == 0 || i == values.amount)
-                    point.y += size.height;
-                point.px = point.x;
-                point.py = point.y;
-                // The first two and last two points are fixed:
-                point.fixed = i < 2 || i > values.amount - 2;
-                if (i > 0) {
-                    var spring = new Spring(segment.previous.point, point, strength);
-                    springs.push(spring);
-                }
-            }
-            path.position.x -= size.width / 4;
-            return path;
-        }
-
-        function onResize() {
-            if (path)
-                path.remove();
-            size = view.bounds.size * [2, 1];
-            path = createPath(0.1);
-        }
-
-        function onMouseMove(event) {
-            var location = path.getNearestLocation(event.point);
-            var segment = location.segment;
-            var point = segment.point;
-            //console.log(point.x + " - " + point.y);
-            checkCurrentTapPosition(point.x, point.y);
-
-            if (!point.fixed && location.distance < size.height / 4) {
-                var y = event.point.y;
-                point.y += (y - point.y) / 6;
-                if (segment.previous && !segment.previous.fixed) {
-                    var previous = segment.previous.point;
-                    previous.y += (y - previous.y) / 24;
-                }
-                if (segment.next && !segment.next.fixed) {
-                    var next = segment.next.point;
-                    next.y += (y - next.y) / 24;
-                }
-            }
-        }
-
-        function onFrame(event) {
-            updateWave(path);
-        }
-
-        function updateWave(path) {
-            var force = 1 - values.friction * values.timeStep * values.timeStep;
-            for (var i = 0, l = path.segments.length; i < l; i++) {
-                var point = path.segments[i].point;
-                var dy = (point.y - point.py) * force;
-                point.py = point.y;
-                point.y = Math.max(point.y + dy, 0);
-            }
-
-            for (var j = 0, l = springs.length; j < l; j++) {
-                springs[j].update();
-            }
-            path.smooth();
-        }
-
-
-    </script>
 
   <script>
   var bpm = 12;
