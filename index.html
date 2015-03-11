@@ -77,22 +77,22 @@ var QueryString = function() {
   //pitch varies from 0-82
   //volume from 0-1
   //duration in ms
-	function playItem(soundItem){
-		var vol = volSlider.val["value"]*(soundItem[1]/100);
-		var oct = Math.floor(octSlider.val["value"]*50/12)*12;
-		var pitch = pitchSlider.val;
-	
-		var freq = keyToFreq(soundItem[0]+oct);
-		var osc = T("tri", { freq: freq, mul: vol });
-		T("timeout", { timeout: soundItem[2] }).on("ended", function() {
-		  this.stop();
-		}).set({ buddies:osc }).start();
-	}
-	
+  function playItem(soundItem){
+    var vol = volSlider.val["value"]*(soundItem[1]/100);
+    var oct = Math.floor(octSlider.val["value"]*50/12)*12;
+    var pitch = pitchSlider.val;
+  
+    var freq = keyToFreq(soundItem[0]+oct);
+    var osc = T("tri", { freq: freq, mul: vol });
+    T("timeout", { timeout: soundItem[2] }).on("ended", function() {
+      this.stop();
+    }).set({ buddies:osc }).start();
+  }
+  
    //play the sound
   function playSound(sound_val) {
     var freq = keyToFreq(sound_val);
-	var vol = volSlider.val["value"];
+  var vol = volSlider.val["value"];
     var osc = T("sin", { freq: freq, mul: vol });
     T("timeout", { timeout: 500 }).on("ended", function() {
       this.stop();
@@ -167,15 +167,15 @@ var QueryString = function() {
         if (socket.io.engine.id != msg.client) break;
         displayMessage(msg.message);
         break;
-		
-	  case 'play_note':
+    
+    case 'play_note':
         if (channel_id == msg.channel) { 
-			playItem(msg.note);
-			if(bpm != msg.bpm){
-				bpm = msg.bpm;
-				metro.speed = bpm;
-			}
-		}
+      playItem(msg.note);
+      if(bpm != msg.bpm){
+        bpm = msg.bpm;
+        metro.speed = bpm;
+      }
+    }
         break;
     }
   });
@@ -330,25 +330,25 @@ var QueryString = function() {
     </script>
 
   <script>
-	var bpm = 12;
-	//NexusUI items
-	nx.onload = function() {
-		
-	  nx.colorize("#00FFFF"); // sets accent (default)
-	  nx.colorize("border", "#00FFFF");
-	  nx.colorize("fill", "#A4A4A4");
-	  
-	metro.speed = bpm;
-	
-	piano.midibase = 48;	
-	piano.on('*',function(data){
-				var key = piano.val;
-				playSound(key["note"]);
-				console.log(key["note"]);
-				});
+  var bpm = 12;
+  //NexusUI items
+  nx.onload = function() {
+    
+    nx.colorize("#00FFFF"); // sets accent (default)
+    nx.colorize("border", "#00FFFF");
+    nx.colorize("fill", "#A4A4A4");
+    
+  metro.speed = bpm;
+  
+  piano.midibase = 48;  
+  piano.on('*',function(data){
+        var key = piano.val;
+        playSound(key["note"]);
+        console.log(key["note"]);
+        });
 
-	
-	}
+  
+  }
 
 </script>
 
@@ -369,7 +369,7 @@ var QueryString = function() {
         <option value="2">Channel 2</option>
         <option value="3">Channel 3</option>
       </select>
-	  
+    
       <button id="change-player-channel-button" onclick="changePlayerChannel()">Change Channel</button>
     </p>
     <p>
@@ -378,20 +378,20 @@ var QueryString = function() {
  </center>
  
  <center>
-	 <div>
-		<p>
-			<canvas nx="metro" id="metro" height="50" width="500"></canvas>
-		</p>
+   <div>
+    <p>
+      <canvas nx="metro" id="metro" height="50" width="500"></canvas>
+    </p>
 
-		<p>
-			<canvas nx="slider" id="volSlider" height="200" width="50"></canvas>
-			<canvas nx="slider" id="octSlider" height="200" width="50"></canvas>
-			<canvas nx="position" id="pitchSlider" height="200" width="400"></canvas>
-		</p>
-		<p>
-			<canvas nx="keyboard" id="piano" height="200" width="500"></canvas>
-		</p>
-	 </div>
+    <p>
+      <canvas nx="slider" id="volSlider" height="200" width="50"></canvas>
+      <canvas nx="slider" id="octSlider" height="200" width="50"></canvas>
+      <canvas nx="position" id="pitchSlider" height="200" width="400"></canvas>
+    </p>
+    <p>
+      <canvas nx="keyboard" id="piano" height="200" width="500"></canvas>
+    </p>
+   </div>
  </center>
 
   <canvas id="canvas" resize hidpi="off"></canvas>
