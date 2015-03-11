@@ -16,6 +16,10 @@
 /*
     Helper functions
 */
+
+/*
+  Get current page's width
+*/
 var getWidth = function() {
   if (self.innerHeight) {
     return self.innerWidth;
@@ -30,9 +34,10 @@ var getWidth = function() {
   }
 }
 
+/*
+  Read parameters in the url
+*/
 var QueryString = function() {
-  // This function is anonymous, is executed immediately and 
-  // the return value is assigned to QueryString!
   var query_string = {};
   var query = window.location.search.substring(1);
   var vars = query.split("&");
@@ -57,7 +62,7 @@ var QueryString = function() {
 <script>
   var socket = io();
   var channel_id = QueryString.channel;
-  var player_name = 'Guest';
+  var player_name = 'Guest'; // Init client name
 
   if (typeof channel_id == 'undefined') channel_id = 0;
   
@@ -103,11 +108,13 @@ var QueryString = function() {
     socket.emit('sync_sounds_station', pack);
   }
 
+  // display a message on screen
   function displayMessage(message_content) {
     console.log(message_content);
     $('#display-message-content').text('>> ' + message_content);
   }
 
+  // If client/admin assigns the current channel to another, update this channel information on screen
   function updateChannelInfo(channel_id) {
     $.getJSON("get_patterns?channel=" + channel_id, function(data) {
       $('t#patterns-text').text(data);
@@ -116,6 +123,7 @@ var QueryString = function() {
   }
   updateChannelInfo(channel_id);
 
+  // Update client's name: Send an ajax request to server
   function changePlayerName() {
     $('button#change-player-name-button').hide();
     var new_name = $('#player-name-text').val();
@@ -127,6 +135,7 @@ var QueryString = function() {
     });
   }
 
+  // Update client's current channel: Send an ajax request to server
   function changePlayerChannel() {
     $('button#change-player-channel-button').hide();
     var new_channel = $('#player-channel-options').val();
@@ -137,8 +146,9 @@ var QueryString = function() {
     });
   }
 
-  // play sounds from other players
+  // Handling the pacakages from server
   socket.on('sync_sounds_station', function(msg) {
+    // Check the data packages from server
     switch(msg.type) {
       case 'sound':
         if (channel_id == msg.channel) { 
@@ -174,17 +184,23 @@ var QueryString = function() {
 
  <script type="text/paperscript" canvas="canvas">
         var browser_width = getWidth();
+        // the frequency value of each key
         var key_freq_arr = [];
+        // number of patterns
         var num_patterns = 5;
+        // the X positions of the keys
         var key_note_x_arr = [];
+        // The width of each key
         var key_note_x_size = browser_width / num_patterns;
         var currentPlayingKey = -1;
         
+        // init
         key_note_x_arr.push(key_note_x_size);
         for (var i = 1; i < num_patterns; i++) {
           key_note_x_arr.push(key_note_x_arr[i - 1] + key_note_x_size);
         }
 
+        // For debuginng
 /*
         console.log(browser_width);
         console.log(key_note_x_size);
@@ -193,6 +209,8 @@ var QueryString = function() {
         console.log(key_note_x_arr.length);
 */
 
+        // Refer to paper.js example
+        // http://paperjs.org/examples/future-splash/
         var values = {
             friction: 0.8,
             timeStep: 0.01,
