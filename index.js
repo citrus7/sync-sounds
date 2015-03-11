@@ -77,8 +77,9 @@ app.get('/get_clients', function(req, res) {
   res.json({ "data": ret });
 });
 
-  Pass the channel_id to this API
+  
 /*
+  Pass the channel_id to this API
   Return the music patterns of given channel 
 */
 app.get('/get_patterns', function(req, res) {
