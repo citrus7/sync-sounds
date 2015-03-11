@@ -161,25 +161,26 @@ app.get('/assign_user_to_channel', function(req, res) {
   console.log('>> assign_user_to_channel: ' + client_id + ' -> ' + clients_table[client_id].channel);
   res.json('okay');
 });
+
 //send music packets at interval
+// background music
 var bpm = 12;
 var noteIterator = 0;
 var interval = setInterval(function() {  
-								noteIterator++;
-								if (noteIterator==num_patterns){
-									noteIterator = 0;
-								}
-								console.log("play note");
-								for (channel_id in channels_table){
-										var pack = {'type': 'play_note',
-										'note': channels_table[channel_id][noteIterator],
-										'bpm':bpm,
-										'channel': channel_id
-										}
-										io.emit('sync_sounds_station', pack);
-									};
-										
-	}, (bpm*100));
+  noteIterator++;
+  if (noteIterator == num_patterns) noteIterator = 0;
+
+  console.log("play note");
+  for (channel_id in channels_table) {
+  	var pack = {
+      'type': 'play_note',
+  		'note': channels_table[channel_id][noteIterator],
+  		'bpm':bpm,
+  		'channel': channel_id
+  	}
+  	io.emit('sync_sounds_station', pack);
+  };
+}, (bpm * 100));
 
 // Socket.io server
 // ------------------------------------------------------------------------------------------------------
