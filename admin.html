@@ -15,9 +15,11 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/jquery-ui.min.js"></script>
 
   <script type="text/javascript" language="javascript" class="init">
+    // Record current client_id and channel_id
     var selected_client_id = -1;
     var selected_channel_id = -1;
 
+    // Send an ajax request to server, to assign a client to another channel
     function adminPickChannel() {
       selected_channel_id = $('#channel-select-options').val();
       if (selected_client_id < 0 || selected_channel_id < 0) return;
@@ -34,6 +36,7 @@
       location.reload();
     }
 
+    // Send an ajax request to server, to reset a channel's music patterns
     function adminResetChannel() {
       var channel_id = $('#channel-reset-options').val();
 
@@ -48,6 +51,7 @@
       location.reload();
     }
 
+    // Send an ajax request to server, to send real-time message to a client
     function adminSendMessageToClient() {
       var message = $('#send-player-msg-input').val();
 
@@ -81,6 +85,11 @@
 </head>
 
 <body class="dt-example">
+  <!-- 
+    Control box for each client:
+      1. Send message to client
+      2. Assign client to another group
+   -->
   <div id="channel-selector-box" title="Select Channel">
     <h5 id="channel-selector-box-client-name"></h5>
     <p>
@@ -98,6 +107,7 @@
     </p>
   </div>
 
+  <!-- Client table -->
   <div class="container">
     <section>
       <h1>Sync-sounds <span> admin dashboard</span></h1>
@@ -117,6 +127,9 @@
       </table>
     </section>
 
+    <!-- 
+      Control box: Reset channel's music patterns (randomly) 
+     -->
     <section>
       Reset Channel Patterns: 
       <select id="channel-reset-options">
