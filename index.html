@@ -71,15 +71,14 @@ var QueryString = function() {
     return Math.pow(2 , (n - 49) / 12) * 440;
   }
   
-
   //Play Sequence
   //Takes in an array with [pitch,volume,duration]
   //pitch varies from 0-82
   //volume from 0-1
   //duration in ms
   function playItem(soundItem){
-    var vol = volSlider.val["value"]*(soundItem[1]/100);
-    var oct = Math.floor(octSlider.val["value"]*50/12)*12;
+    var vol = volSlider.val["value"]*(soundItem[1] / 100);
+    var oct = Math.floor(octSlider.val["value"] * 50 / 12) * 12;
     var pitch = pitchSlider.val;
   
     var freq = keyToFreq(soundItem[0]+oct);
@@ -292,7 +291,7 @@ var QueryString = function() {
             var point = segment.point;
             //console.log(point.x + " - " + point.y);
             checkCurrentTapPosition(point.x, point.y);
-
+            /*
             if (!point.fixed && location.distance < size.height / 4) {
                 var y = event.point.y;
                 point.y += (y - point.y) / 6;
@@ -305,6 +304,7 @@ var QueryString = function() {
                     next.y += (y - next.y) / 24;
                 }
             }
+            */
         }
 
         function onFrame(event) {
@@ -312,6 +312,7 @@ var QueryString = function() {
         }
 
         function updateWave(path) {
+            /*
             var force = 1 - values.friction * values.timeStep * values.timeStep;
             for (var i = 0, l = path.segments.length; i < l; i++) {
                 var point = path.segments[i].point;
@@ -324,6 +325,7 @@ var QueryString = function() {
                 springs[j].update();
             }
             path.smooth();
+            */
         }
 
 
