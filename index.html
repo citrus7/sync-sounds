@@ -11,6 +11,10 @@
   <script src="js/paper.js"></script>
 
   <script src="js/timbre.js"></script>
+  <script src="soundFont/audio-jsonp.js"></script>
+  <script src="soundFont/jsmad.js"></script>
+  <script src="soundFont/mp3_decode.js"></script>
+  <script src="soundFont/soundfont.js"></script>
 
 <script>
 /*
@@ -88,16 +92,26 @@ var QueryString = function() {
     }).set({ buddies:osc }).start();
   }
   
-   //play the sound
+   //play sound
+   //used for keyboard
   function playSound(sound_val) {
     var freq = keyToFreq(sound_val);
   var vol = volSlider.val["value"];
+  var instr = Math.floor(instrument.val["value"]*100);
+  console.log(instr);
+  
+	T.soundfont.setInstrument(instr);
+	T.soundfont.play(sound_val);
+  /*
     var osc = T("sin", { freq: freq, mul: vol });
     T("timeout", { timeout: 500 }).on("ended", function() {
       this.stop();
     }).set({ buddies:osc }).start();
+	*/
+	
   }
 
+ 
   // play note: send signal to server and play sound
   function playNote(note_id) {
     var pack = {
@@ -346,7 +360,6 @@ var QueryString = function() {
   piano.on('*',function(data){
         var key = piano.val;
         playSound(key["note"]);
-        console.log(key["note"]);
         });
 
   
@@ -392,6 +405,9 @@ var QueryString = function() {
     </p>
     <p>
       <canvas nx="keyboard" id="piano" height="200" width="500"></canvas>
+	</p>
+	<p>
+	  <canvas nx="slider" id="instrument" height="25" width="500"></canvas>
     </p>
    </div>
  </center>

@@ -108,19 +108,19 @@ app.get('/send_message_to_client', function(req, res) {
 
 /*
   Generate random music patterns for the given channel
-  No data return
+  No data returned, notes are stored in channels_table
 */
 app.get('/generate_patterns', function(req, res) {
   var channel_id = req.param('channel');
 
   channels_table[channel_id] = [];
   for (var j = 0; j < num_patterns; j++) {
-  //generate pitch
-  var rand_pitch = getRandomInt(50, 70);
-  //generate volume
+  //generate pitch (0 - 100, 40 to 60 is a good range for notes that aren't too high or low)
+  var rand_pitch = getRandomInt(40, 60);
+  //generate volume (0 - 100)
   var rand_vol = getRandomInt(0, 100);
-  //generate duration
-    var rand_dur = getRandomInt(400, 1000);
+  //generate duration (ms)
+  var rand_dur = getRandomInt(400, 1500);
   var note = [rand_pitch,rand_vol,rand_dur];
     channels_table[channel_id].push(note);
   }
@@ -163,8 +163,8 @@ app.get('/assign_user_to_channel', function(req, res) {
   res.json('okay');
 });
 
-//send music packets at interval
-// background music
+//send music packets at interval to create melody
+//set bpm here
 var bpm = 12;
 var noteIterator = 0;
 var interval = setInterval(function() {  
